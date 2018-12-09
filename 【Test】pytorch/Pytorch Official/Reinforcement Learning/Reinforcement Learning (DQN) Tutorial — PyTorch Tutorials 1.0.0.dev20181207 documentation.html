@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<!-- saved from url=(0131)https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html#sphx-glr-download-intermediate-reinforcement-q-learning-py -->
+<html class="js flexbox canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers applicationcache svg inlinesvg smil svgclippaths gr__pytorch_org" lang="en" style=""><!--<![endif]--><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Reinforcement Learning (DQN) Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation</title>
+<style class="anchorjs"></style><link href="./Reinforcement Learning (DQN) Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/theme.css" rel="stylesheet" type="text/css">
+<!-- <link rel="stylesheet" href="../_static/pygments.css" type="text/css" /> -->
+<link href="./Reinforcement Learning (DQN) Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/gallery.css" rel="stylesheet" type="text/css">
+<link href="https://pytorch.org/tutorials/genindex.html" rel="index" title="Index">
+<link href="https://pytorch.org/tutorials/search.html" rel="search" title="Search">
+<link href="https://pytorch.org/tutorials/advanced/numpy_extensions_tutorial.html" rel="next" title="Creating Extensions Using numpy and scipy">
+<link href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html" rel="prev" title="DCGAN Tutorial">
+<script async="" src="./Reinforcement Learning (DQN) Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/analytics.js.下载"></script><script src="./Reinforcement Learning (DQN) Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/modernizr.min.js.下载"></script>
+<style type="text/css">.MathJax_Hover_Frame {border-radius: .25em; -webkit-border-radius: .25em; -moz-border-radius: .25em; -khtml-border-radius: .25em; box-shadow: 0px 0px 15px #83A; -webkit-box-shadow: 0px 0px 15px #83A; -moz-box-shadow: 0px 0px 15px #83A; -khtml-box-shadow: 0px 0px 15px #83A; border: 1px solid #A6D ! important; display: inline-block; position: absolute}
+.MathJax_Menu_Button .MathJax_Hover_Arrow {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; -khtml-border-radius: 4px; font-family: 'Courier New',Courier; font-size: 9px; color: #F0F0F0}
+.MathJax_Menu_Button .MathJax_Hover_Arrow span {display: block; background-color: #AAA; border: 1px solid; border-radius: 3px; line-height: 0; padding: 4px}
+.MathJax_Hover_Arrow:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_Hover_Arrow:hover span {background-color: #CCC!important}
+</style><style type="text/css">#MathJax_About {position: fixed; left: 50%; width: auto; text-align: center; border: 3px outset; padding: 1em 2em; background-color: #DDDDDD; color: black; cursor: default; font-family: message-box; font-size: 120%; font-style: normal; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 15px; -webkit-border-radius: 15px; -moz-border-radius: 15px; -khtml-border-radius: 15px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_About.MathJax_MousePost {outline: none}
+.MathJax_Menu {position: absolute; background-color: white; color: black; width: auto; padding: 2px; border: 1px solid #CCCCCC; margin: 0; cursor: default; font: menu; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+.MathJax_MenuItem {padding: 2px 2em; background: transparent}
+.MathJax_MenuArrow {position: absolute; right: .5em; padding-top: .25em; color: #666666; font-size: .75em}
+.MathJax_MenuActive .MathJax_MenuArrow {color: white}
+.MathJax_MenuArrow.RTL {left: .5em; right: auto}
+.MathJax_MenuCheck {position: absolute; left: .7em}
+.MathJax_MenuCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuRadioCheck {position: absolute; left: 1em}
+.MathJax_MenuRadioCheck.RTL {right: 1em; left: auto}
+.MathJax_MenuLabel {padding: 2px 2em 4px 1.33em; font-style: italic}
+.MathJax_MenuRule {border-top: 1px solid #CCCCCC; margin: 4px 1px 0px}
+.MathJax_MenuDisabled {color: GrayText}
+.MathJax_MenuActive {background-color: Highlight; color: HighlightText}
+.MathJax_MenuDisabled:focus, .MathJax_MenuLabel:focus {background-color: #E8E8E8}
+.MathJax_ContextMenu:focus {outline: none}
+.MathJax_ContextMenu .MathJax_MenuItem:focus {outline: none}
+#MathJax_AboutClose {top: .2em; right: .2em}
+.MathJax_Menu .MathJax_MenuClose {top: -10px; left: -10px}
+.MathJax_MenuClose {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; font-family: 'Courier New',Courier; font-size: 24px; color: #F0F0F0}
+.MathJax_MenuClose span {display: block; background-color: #AAA; border: 1.5px solid; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; line-height: 0; padding: 8px 0 6px}
+.MathJax_MenuClose:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_MenuClose:hover span {background-color: #CCC!important}
+.MathJax_MenuClose:hover:focus {outline: none}
+</style><style type="text/css">.MathJax_Preview .MJXf-math {color: inherit!important}
+</style><style type="text/css">.MJX_Assistive_MathML {position: absolute!important; top: 0; left: 0; clip: rect(1px, 1px, 1px, 1px); padding: 1px 0 0 0!important; border: 0!important; height: 1px!important; width: 1px!important; overflow: hidden!important; display: block!important; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none}
+.MJX_Assistive_MathML.MJX_Assistive_MathML_Block {width: 100%!important}
+</style><style type="text/css">#MathJax_Zoom {position: absolute; background-color: #F0F0F0; overflow: auto; display: block; z-index: 301; padding: .5em; border: 1px solid black; margin: 0; font-weight: normal; font-style: normal; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; -webkit-box-sizing: content-box; -moz-box-sizing: content-box; box-sizing: content-box; box-shadow: 5px 5px 15px #AAAAAA; -webkit-box-shadow: 5px 5px 15px #AAAAAA; -moz-box-shadow: 5px 5px 15px #AAAAAA; -khtml-box-shadow: 5px 5px 15px #AAAAAA; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_ZoomOverlay {position: absolute; left: 0; top: 0; z-index: 300; display: inline-block; width: 100%; height: 100%; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+#MathJax_ZoomFrame {position: relative; display: inline-block; height: 0; width: 0}
+#MathJax_ZoomEventTrap {position: absolute; left: 0; top: 0; z-index: 302; display: inline-block; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+</style><style type="text/css">.MathJax_Preview {color: #888}
+#MathJax_Message {position: fixed; left: 1em; bottom: 1.5em; background-color: #E6E6E6; border: 1px solid #959595; margin: 0px; padding: 2px 8px; z-index: 102; color: black; font-size: 80%; width: auto; white-space: nowrap}
+#MathJax_MSIE_Frame {position: absolute; top: 0; left: 0; width: 0px; z-index: 101; border: 0px; margin: 0px; padding: 0px}
+.MathJax_Error {color: #CC0000; font-style: italic}
+</style><style type="text/css">.MJXp-script {font-size: .8em}
+.MJXp-right {-webkit-transform-origin: right; -moz-transform-origin: right; -ms-transform-origin: right; -o-transform-origin: right; transform-origin: right}
+.MJXp-bold {font-weight: bold}
+.MJXp-italic {font-style: italic}
+.MJXp-scr {font-family: MathJax_Script,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-frak {font-family: MathJax_Fraktur,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-sf {font-family: MathJax_SansSerif,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-cal {font-family: MathJax_Caligraphic,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-mono {font-family: MathJax_Typewriter,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-largeop {font-size: 150%}
+.MJXp-largeop.MJXp-int {vertical-align: -.2em}
+.MJXp-math {display: inline-block; line-height: 1.2; text-indent: 0; font-family: 'Times New Roman',Times,STIXGeneral,serif; white-space: nowrap; border-collapse: collapse}
+.MJXp-display {display: block; text-align: center; margin: 1em 0}
+.MJXp-math span {display: inline-block}
+.MJXp-box {display: block!important; text-align: center}
+.MJXp-box:after {content: " "}
+.MJXp-rule {display: block!important; margin-top: .1em}
+.MJXp-char {display: block!important}
+.MJXp-mo {margin: 0 .15em}
+.MJXp-mfrac {margin: 0 .125em; vertical-align: .25em}
+.MJXp-denom {display: inline-table!important; width: 100%}
+.MJXp-denom > * {display: table-row!important}
+.MJXp-surd {vertical-align: top}
+.MJXp-surd > * {display: block!important}
+.MJXp-script-box > *  {display: table!important; height: 50%}
+.MJXp-script-box > * > * {display: table-cell!important; vertical-align: top}
+.MJXp-script-box > *:last-child > * {vertical-align: bottom}
+.MJXp-script-box > * > * > * {display: block!important}
+.MJXp-mphantom {visibility: hidden}
+.MJXp-munderover {display: inline-table!important}
+.MJXp-over {display: inline-block!important; text-align: center}
+.MJXp-over > * {display: block!important}
+.MJXp-munderover > * {display: table-row!important}
+.MJXp-mtable {vertical-align: .25em; margin: 0 .125em}
+.MJXp-mtable > * {display: inline-table!important; vertical-align: middle}
+.MJXp-mtr {display: table-row!important}
+.MJXp-mtd {display: table-cell!important; text-align: center; padding: .5em 0 0 .5em}
+.MJXp-mtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-mlabeledtr {display: table-row!important}
+.MJXp-mlabeledtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mlabeledtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-merror {background-color: #FFFF88; color: #CC0000; border: 1px solid #CC0000; padding: 1px 3px; font-style: normal; font-size: 90%}
+.MJXp-scale0 {-webkit-transform: scaleX(.0); -moz-transform: scaleX(.0); -ms-transform: scaleX(.0); -o-transform: scaleX(.0); transform: scaleX(.0)}
+.MJXp-scale1 {-webkit-transform: scaleX(.1); -moz-transform: scaleX(.1); -ms-transform: scaleX(.1); -o-transform: scaleX(.1); transform: scaleX(.1)}
+.MJXp-scale2 {-webkit-transform: scaleX(.2); -moz-transform: scaleX(.2); -ms-transform: scaleX(.2); -o-transform: scaleX(.2); transform: scaleX(.2)}
+.MJXp-scale3 {-webkit-transform: scaleX(.3); -moz-transform: scaleX(.3); -ms-transform: scaleX(.3); -o-transform: scaleX(.3); transform: scaleX(.3)}
+.MJXp-scale4 {-webkit-transform: scaleX(.4); -moz-transform: scaleX(.4); -ms-transform: scaleX(.4); -o-transform: scaleX(.4); transform: scaleX(.4)}
+.MJXp-scale5 {-webkit-transform: scaleX(.5); -moz-transform: scaleX(.5); -ms-transform: scaleX(.5); -o-transform: scaleX(.5); transform: scaleX(.5)}
+.MJXp-scale6 {-webkit-transform: scaleX(.6); -moz-transform: scaleX(.6); -ms-transform: scaleX(.6); -o-transform: scaleX(.6); transform: scaleX(.6)}
+.MJXp-scale7 {-webkit-transform: scaleX(.7); -moz-transform: scaleX(.7); -ms-transform: scaleX(.7); -o-transform: scaleX(.7); transform: scaleX(.7)}
+.MJXp-scale8 {-webkit-transform: scaleX(.8); -moz-transform: scaleX(.8); -ms-transform: scaleX(.8); -o-transform: scaleX(.8); transform: scaleX(.8)}
+.MJXp-scale9 {-webkit-transform: scaleX(.9); -moz-transform: scaleX(.9); -ms-transform: scaleX(.9); -o-transform: scaleX(.9); transform: scaleX(.9)}
+.MathJax_PHTML .noError {vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}
+</style><style type="text/css">.MathJax_Display {text-align: center; margin: 1em 0em; position: relative; display: block!important; text-indent: 0; max-width: none; max-height: none; min-width: 0; min-height: 0; width: 100%}
+.MathJax .merror {background-color: #FFFF88; color: #CC0000; border: 1px solid #CC0000; padding: 1px 3px; font-style: normal; font-size: 90%}
+.MathJax .MJX-monospace {font-family: monospace}
+.MathJax .MJX-sans-serif {font-family: sans-serif}
+#MathJax_Tooltip {background-color: InfoBackground; color: InfoText; border: 1px solid black; box-shadow: 2px 2px 5px #AAAAAA; -webkit-box-shadow: 2px 2px 5px #AAAAAA; -moz-box-shadow: 2px 2px 5px #AAAAAA; -khtml-box-shadow: 2px 2px 5px #AAAAAA; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true'); padding: 3px 4px; z-index: 401; position: absolute; left: 0; top: 0; width: auto; height: auto; display: none}
+.MathJax {display: inline; font-style: normal; font-weight: normal; line-height: normal; font-size: 100%; font-size-adjust: none; text-indent: 0; text-align: left; text-transform: none; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; direction: ltr; max-width: none; max-height: none; min-width: 0; min-height: 0; border: 0; padding: 0; margin: 0}
+.MathJax:focus, body :focus .MathJax {display: inline-table}
+.MathJax.MathJax_FullWidth {text-align: center; display: table-cell!important; width: 10000em!important}
+.MathJax img, .MathJax nobr, .MathJax a {border: 0; padding: 0; margin: 0; max-width: none; max-height: none; min-width: 0; min-height: 0; vertical-align: 0; line-height: normal; text-decoration: none}
+img.MathJax_strut {border: 0!important; padding: 0!important; margin: 0!important; vertical-align: 0!important}
+.MathJax span {display: inline; position: static; border: 0; padding: 0; margin: 0; vertical-align: 0; line-height: normal; text-decoration: none}
+.MathJax nobr {white-space: nowrap!important}
+.MathJax img {display: inline!important; float: none!important}
+.MathJax * {transition: none; -webkit-transition: none; -moz-transition: none; -ms-transition: none; -o-transition: none}
+.MathJax_Processing {visibility: hidden; position: fixed; width: 0; height: 0; overflow: hidden}
+.MathJax_Processed {display: none!important}
+.MathJax_ExBox {display: block!important; overflow: hidden; width: 1px; height: 60ex; min-height: 0; max-height: none}
+.MathJax .MathJax_EmBox {display: block!important; overflow: hidden; width: 1px; height: 60em; min-height: 0; max-height: none}
+.MathJax_LineBox {display: table!important}
+.MathJax_LineBox span {display: table-cell!important; width: 10000em!important; min-width: 0; max-width: none; padding: 0; border: 0; margin: 0}
+.MathJax .MathJax_HitBox {cursor: text; background: white; opacity: 0; filter: alpha(opacity=0)}
+.MathJax .MathJax_HitBox * {filter: none; opacity: 1; background: transparent}
+#MathJax_Tooltip * {filter: none; opacity: 1; background: transparent}
+@font-face {font-family: MathJax_Main; src: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/fonts/HTML-CSS/TeX/woff/MathJax_Main-Regular.woff?V=2.7.1') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/fonts/HTML-CSS/TeX/otf/MathJax_Main-Regular.otf?V=2.7.1') format('opentype')}
+@font-face {font-family: MathJax_Main-bold; src: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/fonts/HTML-CSS/TeX/woff/MathJax_Main-Bold.woff?V=2.7.1') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/fonts/HTML-CSS/TeX/otf/MathJax_Main-Bold.otf?V=2.7.1') format('opentype')}
+@font-face {font-family: MathJax_Main-italic; src: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/fonts/HTML-CSS/TeX/woff/MathJax_Main-Italic.woff?V=2.7.1') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/fonts/HTML-CSS/TeX/otf/MathJax_Main-Italic.otf?V=2.7.1') format('opentype')}
+@font-face {font-family: MathJax_Math-italic; src: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/fonts/HTML-CSS/TeX/woff/MathJax_Math-Italic.woff?V=2.7.1') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/fonts/HTML-CSS/TeX/otf/MathJax_Math-Italic.otf?V=2.7.1') format('opentype')}
+@font-face {font-family: MathJax_Caligraphic; src: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/fonts/HTML-CSS/TeX/woff/MathJax_Caligraphic-Regular.woff?V=2.7.1') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/fonts/HTML-CSS/TeX/otf/MathJax_Caligraphic-Regular.otf?V=2.7.1') format('opentype')}
+@font-face {font-family: MathJax_Size1; src: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/fonts/HTML-CSS/TeX/woff/MathJax_Size1-Regular.woff?V=2.7.1') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/fonts/HTML-CSS/TeX/otf/MathJax_Size1-Regular.otf?V=2.7.1') format('opentype')}
+@font-face {font-family: MathJax_Size2; src: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/fonts/HTML-CSS/TeX/woff/MathJax_Size2-Regular.woff?V=2.7.1') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/fonts/HTML-CSS/TeX/otf/MathJax_Size2-Regular.otf?V=2.7.1') format('opentype')}
+@font-face {font-family: MathJax_Size3; src: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/fonts/HTML-CSS/TeX/woff/MathJax_Size3-Regular.woff?V=2.7.1') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/fonts/HTML-CSS/TeX/otf/MathJax_Size3-Regular.otf?V=2.7.1') format('opentype')}
+@font-face {font-family: MathJax_Size4; src: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/fonts/HTML-CSS/TeX/woff/MathJax_Size4-Regular.woff?V=2.7.1') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/fonts/HTML-CSS/TeX/otf/MathJax_Size4-Regular.otf?V=2.7.1') format('opentype')}
+.MathJax .noError {vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}
+</style><style type="text/css">@font-face {font-family: MathJax_AMS; src: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/fonts/HTML-CSS/TeX/woff/MathJax_AMS-Regular.woff?V=2.7.1') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/fonts/HTML-CSS/TeX/otf/MathJax_AMS-Regular.otf?V=2.7.1') format('opentype')}
+</style></head>
+<body class="pytorch-body" data-gr-c-s-loaded="true"><div style="visibility: hidden; overflow: hidden; position: absolute; top: 0px; height: 1px; width: auto; padding: 0px; border: 0px; margin: 0px; text-align: left; text-indent: 0px; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal;"><div id="MathJax_Hidden"></div></div><div id="MathJax_Message" style="display: none;"></div><div class="container-fluid header-holder tutorials-header" id="header-holder">
+<div class="container">
+<div class="header-container">
+<a aria-label="PyTorch" class="header-logo" href="https://pytorch.org/"></a>
+<div class="main-menu">
+<ul>
+<li>
+<a href="https://pytorch.org/get-started">Get Started</a>
+</li>
+<li>
+<a href="https://pytorch.org/features">Features</a>
+</li>
+<li>
+<a href="https://pytorch.org/ecosystem">Ecosystem</a>
+</li>
+<li>
+<a href="https://pytorch.org/blog/">Blog</a>
+</li>
+<li class="active">
+<a href="https://pytorch.org/tutorials">Tutorials</a>
+</li>
+<li>
+<a href="https://pytorch.org/docs/stable/index.html">Docs</a>
+</li>
+<li>
+<a href="https://pytorch.org/resources">Resources</a>
+</li>
+<li>
+<a href="https://github.com/pytorch/pytorch">Github</a>
+</li>
+</ul>
+</div>
+<a class="main-menu-open-button" data-behavior="open-mobile-menu" href="https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html#"></a>
+</div>
+</div>
+</div>
+
+<div class="table-of-contents-link-wrapper">
+<span>Table of Contents</span>
+<a class="toggle-table-of-contents" data-behavior="toggle-table-of-contents" href="https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html#"></a>
+</div>
+<nav class="pytorch-left-menu" data-toggle="wy-nav-shift" id="pytorch-left-menu" style="height: 100%;">
+<div class="pytorch-side-scroll">
+<div aria-label="main navigation" class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation">
+<div class="pytorch-left-menu-search">
+<div class="version">
+                  1.0.0.dev20181207
+                </div>
+<div role="search">
+<form action="https://pytorch.org/tutorials/search.html" class="wy-form" id="rtd-search-form" method="get">
+<input name="q" placeholder="Search Tutorials" type="text">
+<input name="check_keywords" type="hidden" value="yes">
+<input name="area" type="hidden" value="default">
+</form>
+</div>
+</div>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/beginner/deep_learning_60min_blitz.html">Deep Learning with PyTorch: A 60 Minute Blitz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/beginner/data_loading_tutorial.html">Data Loading and Processing Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/beginner/pytorch_with_examples.html">Learning PyTorch with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/beginner/transfer_learning_tutorial.html">Transfer Learning Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/beginner/deploy_seq2seq_hybrid_frontend_tutorial.html">Deploying a Seq2Seq Model with the Hybrid Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/beginner/saving_loading_models.html">Saving and Loading Models</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Image</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/beginner/finetuning_torchvision_models_tutorial.html">Finetuning Torchvision Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/intermediate/spatial_transformer_tutorial.html">Spatial Transformer Networks Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/advanced/neural_style_tutorial.html">Neural Transfer Using PyTorch</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/beginner/fgsm_tutorial.html">Adversarial Example Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/advanced/super_resolution_with_caffe2.html">Transfering a Model from PyTorch to Caffe2 and Mobile using ONNX</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Text</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/beginner/chatbot_tutorial.html">Chatbot Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/intermediate/char_rnn_generation_tutorial.html">Generating Names with a Character-Level RNN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/intermediate/char_rnn_classification_tutorial.html">Classifying Names with a Character-Level RNN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/beginner/deep_learning_nlp_tutorial.html">Deep Learning for NLP with Pytorch</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/intermediate/seq2seq_translation_tutorial.html">Translation with a Sequence to Sequence Network and Attention</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Generative</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html">DCGAN Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reinforcement Learning</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal current" href="https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html#">Reinforcement Learning (DQN) Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Extending PyTorch</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/advanced/numpy_extensions_tutorial.html">Creating Extensions Using numpy and scipy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/advanced/cpp_extension.html">Custom C++ and CUDA Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/advanced/torch_script_custom_ops.html">Extending TorchScript with Custom C++ Operators</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Production Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/intermediate/dist_tuto.html">Writing Distributed Applications with PyTorch</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/advanced/ONNXLive.html">ONNX Live Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/advanced/cpp_export.html">Loading a PyTorch Model in C++</a></li>
+</ul>
+</div>
+</div>
+</nav>
+<div class="pytorch-container">
+<div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+<div class="pytorch-breadcrumbs-wrapper">
+<div aria-label="breadcrumbs navigation" role="navigation">
+<ul class="pytorch-breadcrumbs">
+<li>
+<a href="https://pytorch.org/tutorials/index.html">
+          
+            Tutorials
+          
+        </a> &gt;
+      </li>
+<li>Reinforcement Learning (DQN) Tutorial</li>
+<li class="pytorch-breadcrumbs-aside">
+<a href="https://pytorch.org/tutorials/_sources/intermediate/reinforcement_q_learning.rst.txt" rel="nofollow"><img src="./Reinforcement Learning (DQN) Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/view-page-source-icon.svg"></a>
+</li>
+</ul>
+</div>
+</div>
+<div class="pytorch-shortcuts-wrapper" id="pytorch-shortcuts-wrapper" style="display: block;">
+          Shortcuts
+        </div>
+</div>
+<section class="pytorch-content-wrap" data-toggle="wy-nav-shift" id="pytorch-content-wrap">
+<div class="pytorch-content-left">
+<div class="rst-content">
+<div class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<article class="pytorch-article" id="pytorch-article" itemprop="articleBody">
+<div class="sphx-glr-download-link-note admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Click <a class="reference internal" href="https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html#sphx-glr-download-intermediate-reinforcement-q-learning-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+</div>
+<div class="sphx-glr-example-title section" id="reinforcement-learning-dqn-tutorial">
+<span id="sphx-glr-intermediate-reinforcement-q-learning-py"></span><h1>Reinforcement Learning (DQN) Tutorial<a class="anchorjs-link " href="https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html#reinforcement-learning-dqn-tutorial" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h1>
+<p><strong>Author</strong>: <a class="reference external" href="https://github.com/apaszke">Adam Paszke</a></p>
+<p>This tutorial shows how to use PyTorch to train a Deep Q Learning (DQN) agent
+on the CartPole-v0 task from the <a class="reference external" href="https://gym.openai.com/">OpenAI Gym</a>.</p>
+<p><strong>Task</strong></p>
+<p>The agent has to decide between two actions - moving the cart left or
+right - so that the pole attached to it stays upright. You can find an
+official leaderboard with various algorithms and visualizations at the
+<a class="reference external" href="https://gym.openai.com/envs/CartPole-v0">Gym website</a>.</p>
+<div class="figure" id="id1">
+<img alt="cartpole" src="./Reinforcement Learning (DQN) Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/cartpole1.gif">
+<p class="caption"><span class="caption-text">cartpole</span></p>
+</div>
+<p>As the agent observes the current state of the environment and chooses
+an action, the environment <em>transitions</em> to a new state, and also
+returns a reward that indicates the consequences of the action. In this
+task, the environment terminates if the pole falls over too far.</p>
+<p>The CartPole task is designed so that the inputs to the agent are 4 real
+values representing the environment state (position, velocity, etc.).
+However, neural networks can solve the task purely by looking at the
+scene, so we’ll use a patch of the screen centered on the cart as an
+input. Because of this, our results aren’t directly comparable to the
+ones from the official leaderboard - our task is much harder.
+Unfortunately this does slow down the training, because we have to
+render all the frames.</p>
+<p>Strictly speaking, we will present the state as the difference between
+the current screen patch and the previous one. This will allow the agent
+to take the velocity of the pole into account from one image.</p>
+<p><strong>Packages</strong></p>
+<p>First, let’s import needed packages. Firstly, we need
+<a class="reference external" href="https://gym.openai.com/docs">gym</a> for the environment
+(Install using <cite>pip install gym</cite>).
+We’ll also use the following from PyTorch:</p>
+<ul class="simple">
+<li>neural networks (<code class="docutils literal notranslate"><span class="pre">torch.nn</span></code>)</li>
+<li>optimization (<code class="docutils literal notranslate"><span class="pre">torch.optim</span></code>)</li>
+<li>automatic differentiation (<code class="docutils literal notranslate"><span class="pre">torch.autograd</span></code>)</li>
+<li>utilities for vision tasks (<code class="docutils literal notranslate"><span class="pre">torchvision</span></code> - <a class="reference external" href="https://github.com/pytorch/vision">a separate
+package</a>).</li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gym</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">count</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="kn">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch.optim</span> <span class="kn">as</span> <span class="nn">optim</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="kn">as</span> <span class="nn">F</span>
+<span class="kn">import</span> <span class="nn">torchvision.transforms</span> <span class="kn">as</span> <span class="nn">T</span>
+
+
+<span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s1">'CartPole-v0'</span><span class="p">)</span><span class="o">.</span><span class="n">unwrapped</span>
+
+<span class="c1"># set up matplotlib</span>
+<span class="n">is_ipython</span> <span class="o">=</span> <span class="s1">'inline'</span> <span class="ow">in</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">get_backend</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">is_ipython</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">IPython</span> <span class="kn">import</span> <span class="n">display</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">ion</span><span class="p">()</span>
+
+<span class="c1"># if gpu is to be used</span>
+<span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">"cuda"</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">"cpu"</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="section" id="replay-memory">
+<h2>Replay Memory<a class="anchorjs-link " href="https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html#replay-memory" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<p>We’ll be using experience replay memory for training our DQN. It stores
+the transitions that the agent observes, allowing us to reuse this data
+later. By sampling from it randomly, the transitions that build up a
+batch are decorrelated. It has been shown that this greatly stabilizes
+and improves the DQN training procedure.</p>
+<p>For this, we’re going to need two classses:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">Transition</span></code> - a named tuple representing a single transition in
+our environment</li>
+<li><code class="docutils literal notranslate"><span class="pre">ReplayMemory</span></code> - a cyclic buffer of bounded size that holds the
+transitions observed recently. It also implements a <code class="docutils literal notranslate"><span class="pre">.sample()</span></code>
+method for selecting a random batch of transitions for training.</li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Transition</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">'Transition'</span><span class="p">,</span>
+                        <span class="p">(</span><span class="s1">'state'</span><span class="p">,</span> <span class="s1">'action'</span><span class="p">,</span> <span class="s1">'next_state'</span><span class="p">,</span> <span class="s1">'reward'</span><span class="p">))</span>
+
+
+<span class="k">class</span> <span class="nc">ReplayMemory</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capacity</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">capacity</span> <span class="o">=</span> <span class="n">capacity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">memory</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">"""Saves a transition."""</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">memory</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">capacity</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">memory</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">memory</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">]</span> <span class="o">=</span> <span class="n">Transition</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">capacity</span>
+
+    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">memory</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">memory</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now, let’s define our model. But first, let quickly recap what a DQN is.</p>
+</div>
+<div class="section" id="dqn-algorithm">
+<h2>DQN algorithm<a class="anchorjs-link " href="https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html#dqn-algorithm" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<p>Our environment is deterministic, so all equations presented here are
+also formulated deterministically for the sake of simplicity. In the
+reinforcement learning literature, they would also contain expectations
+over stochastic transitions in the environment.</p>
+<p>Our aim will be to train a policy that tries to maximize the discounted,
+cumulative reward
+<span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-1-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;msub&gt;&lt;mi&gt;R&lt;/mi&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;msub&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mn&gt;0&lt;/mn&gt;&lt;/msub&gt;&lt;/mrow&gt;&lt;/msub&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;munderover&gt;&lt;mo&gt;&amp;#x2211;&lt;/mo&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mn&gt;0&lt;/mn&gt;&lt;/msub&gt;&lt;/mrow&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mi mathvariant=&quot;normal&quot;&gt;&amp;#x221E;&lt;/mi&gt;&lt;/mrow&gt;&lt;/munderover&gt;&lt;msup&gt;&lt;mi&gt;&amp;#x03B3;&lt;/mi&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mo&gt;&amp;#x2212;&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mn&gt;0&lt;/mn&gt;&lt;/msub&gt;&lt;/mrow&gt;&lt;/msup&gt;&lt;msub&gt;&lt;mi&gt;r&lt;/mi&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;/msub&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-1" style="width: 5.054em; display: inline-block;"><span style="display: inline-block; position: relative; width: 9.621em; height: 0px; font-size: 52%;"><span style="position: absolute; clip: rect(0.727em, 1009.62em, 3.251em, -999.994em); top: -2.157em; left: 0em;"><span class="mrow" id="MathJax-Span-2"><span class="msubsup" id="MathJax-Span-3"><span style="display: inline-block; position: relative; width: 1.689em; height: 0px;"><span style="position: absolute; clip: rect(2.891em, 1000.73em, 4.333em, -999.994em); top: -3.96em; left: 0em;"><span class="mi" id="MathJax-Span-4" style="font-family: MathJax_Math-italic;">R</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; top: -3.72em; left: 0.727em;"><span class="texatom" id="MathJax-Span-5"><span class="mrow" id="MathJax-Span-6"><span class="msubsup" id="MathJax-Span-7"><span style="display: inline-block; position: relative; width: 0.847em; height: 0px;"><span style="position: absolute; clip: rect(3.011em, 1000.37em, 4.333em, -999.994em); top: -3.96em; left: 0em;"><span class="mi" id="MathJax-Span-8" style="font-size: 96.2%; font-family: MathJax_Math-italic;">t</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; top: -3.6em; left: 0.367em;"><span class="mn" id="MathJax-Span-9" style="font-size: 96.2%; font-family: MathJax_Main;">0</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span></span><span class="mo" id="MathJax-Span-10" style="font-family: MathJax_Main; padding-left: 0.246em;">=</span><span class="munderover" id="MathJax-Span-11" style="padding-left: 0.246em;"><span style="display: inline-block; position: relative; width: 3.131em; height: 0px;"><span style="position: absolute; clip: rect(2.891em, 1000.97em, 4.573em, -999.994em); top: -3.96em; left: 0em;"><span class="mo" id="MathJax-Span-12" style="font-family: MathJax_Size1; vertical-align: 0em;">∑</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; clip: rect(3.131em, 1001.09em, 4.333em, -999.994em); top: -4.321em; left: 1.088em;"><span class="texatom" id="MathJax-Span-13"><span class="mrow" id="MathJax-Span-14"><span class="mi" id="MathJax-Span-15" style="font-size: 96.2%; font-family: MathJax_Main;">∞</span></span></span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; clip: rect(3.011em, 1002.05em, 4.694em, -999.994em); top: -3.6em; left: 1.088em;"><span class="texatom" id="MathJax-Span-16"><span class="mrow" id="MathJax-Span-17"><span class="mi" id="MathJax-Span-18" style="font-size: 96.2%; font-family: MathJax_Math-italic;">t</span><span class="mo" id="MathJax-Span-19" style="font-size: 96.2%; font-family: MathJax_Main;">=</span><span class="msubsup" id="MathJax-Span-20"><span style="display: inline-block; position: relative; width: 0.847em; height: 0px;"><span style="position: absolute; clip: rect(3.011em, 1000.37em, 4.333em, -999.994em); top: -3.96em; left: 0em;"><span class="mi" id="MathJax-Span-21" style="font-size: 96.2%; font-family: MathJax_Math-italic;">t</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; top: -3.6em; left: 0.367em;"><span class="mn" id="MathJax-Span-22" style="font-size: 96.2%; font-family: MathJax_Main;">0</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span></span><span class="msubsup" id="MathJax-Span-23" style="padding-left: 0.126em;"><span style="display: inline-block; position: relative; width: 2.65em; height: 0px;"><span style="position: absolute; clip: rect(3.131em, 1000.61em, 4.573em, -999.994em); top: -3.96em; left: 0em;"><span class="mi" id="MathJax-Span-24" style="font-family: MathJax_Math-italic;">γ<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.006em;"></span></span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; top: -4.441em; left: 0.607em;"><span class="texatom" id="MathJax-Span-25"><span class="mrow" id="MathJax-Span-26"><span class="mi" id="MathJax-Span-27" style="font-size: 96.2%; font-family: MathJax_Math-italic;">t</span><span class="mo" id="MathJax-Span-28" style="font-size: 96.2%; font-family: MathJax_Main;">−</span><span class="msubsup" id="MathJax-Span-29"><span style="display: inline-block; position: relative; width: 0.847em; height: 0px;"><span style="position: absolute; clip: rect(3.011em, 1000.37em, 4.333em, -999.994em); top: -3.96em; left: 0em;"><span class="mi" id="MathJax-Span-30" style="font-size: 96.2%; font-family: MathJax_Math-italic;">t</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; top: -3.6em; left: 0.367em;"><span class="mn" id="MathJax-Span-31" style="font-size: 96.2%; font-family: MathJax_Main;">0</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span></span><span class="msubsup" id="MathJax-Span-32"><span style="display: inline-block; position: relative; width: 0.847em; height: 0px;"><span style="position: absolute; clip: rect(3.131em, 1000.49em, 4.333em, -999.994em); top: -3.96em; left: 0em;"><span class="mi" id="MathJax-Span-33" style="font-family: MathJax_Math-italic;">r</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; top: -3.72em; left: 0.487em;"><span class="mi" id="MathJax-Span-34" style="font-size: 96.2%; font-family: MathJax_Math-italic;">t</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.169em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.434em; border-left: 0px solid; width: 0px; height: 1.066em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>R</mi><mrow class="MJX-TeXAtom-ORD"><msub><mi>t</mi><mn>0</mn></msub></mrow></msub><mo>=</mo><munderover><mo>∑</mo><mrow class="MJX-TeXAtom-ORD"><mi>t</mi><mo>=</mo><msub><mi>t</mi><mn>0</mn></msub></mrow><mrow class="MJX-TeXAtom-ORD"><mi mathvariant="normal">∞</mi></mrow></munderover><msup><mi>γ</mi><mrow class="MJX-TeXAtom-ORD"><mi>t</mi><mo>−</mo><msub><mi>t</mi><mn>0</mn></msub></mrow></msup><msub><mi>r</mi><mi>t</mi></msub></math></span></span><script type="math/tex" id="MathJax-Element-1">R_{t_0} = \sum_{t=t_0}^{\infty} \gamma^{t - t_0} r_t</script></span>, where
+<span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-2-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;msub&gt;&lt;mi&gt;R&lt;/mi&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;msub&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mn&gt;0&lt;/mn&gt;&lt;/msub&gt;&lt;/mrow&gt;&lt;/msub&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-35" style="width: 0.847em; display: inline-block;"><span style="display: inline-block; position: relative; width: 1.689em; height: 0px; font-size: 52%;"><span style="position: absolute; clip: rect(1.088em, 1001.69em, 3.131em, -999.994em); top: -2.157em; left: 0em;"><span class="mrow" id="MathJax-Span-36"><span class="msubsup" id="MathJax-Span-37"><span style="display: inline-block; position: relative; width: 1.689em; height: 0px;"><span style="position: absolute; clip: rect(2.891em, 1000.73em, 4.333em, -999.994em); top: -3.96em; left: 0em;"><span class="mi" id="MathJax-Span-38" style="font-family: MathJax_Math-italic;">R</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; top: -3.72em; left: 0.727em;"><span class="texatom" id="MathJax-Span-39"><span class="mrow" id="MathJax-Span-40"><span class="msubsup" id="MathJax-Span-41"><span style="display: inline-block; position: relative; width: 0.847em; height: 0px;"><span style="position: absolute; clip: rect(3.011em, 1000.37em, 4.333em, -999.994em); top: -3.96em; left: 0em;"><span class="mi" id="MathJax-Span-42" style="font-size: 96.2%; font-family: MathJax_Math-italic;">t</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; top: -3.6em; left: 0.367em;"><span class="mn" id="MathJax-Span-43" style="font-size: 96.2%; font-family: MathJax_Main;">0</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.169em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.372em; border-left: 0px solid; width: 0px; height: 0.816em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>R</mi><mrow class="MJX-TeXAtom-ORD"><msub><mi>t</mi><mn>0</mn></msub></mrow></msub></math></span></span><script type="math/tex" id="MathJax-Element-2">R_{t_0}</script></span> is also known as the <em>return</em>. The discount,
+<span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-3-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;&amp;#x03B3;&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-44" style="width: 0.367em; display: inline-block;"><span style="display: inline-block; position: relative; width: 0.607em; height: 0px; font-size: 52%;"><span style="position: absolute; clip: rect(1.328em, 1000.61em, 2.77em, -999.994em); top: -2.157em; left: 0em;"><span class="mrow" id="MathJax-Span-45"><span class="mi" id="MathJax-Span-46" style="font-family: MathJax_Math-italic;">γ<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.006em;"></span></span></span><span style="display: inline-block; width: 0px; height: 2.169em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.184em; border-left: 0px solid; width: 0px; height: 0.441em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>γ</mi></math></span></span><script type="math/tex" id="MathJax-Element-3">\gamma</script></span>, should be a constant between <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-4-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mn&gt;0&lt;/mn&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-47" style="width: 0.246em; display: inline-block;"><span style="display: inline-block; position: relative; width: 0.487em; height: 0px; font-size: 52%;"><span style="position: absolute; clip: rect(1.088em, 1000.49em, 2.53em, -999.994em); top: -2.157em; left: 0em;"><span class="mrow" id="MathJax-Span-48"><span class="mn" id="MathJax-Span-49" style="font-family: MathJax_Main;">0</span></span><span style="display: inline-block; width: 0px; height: 2.169em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.059em; border-left: 0px solid; width: 0px; height: 0.503em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mn>0</mn></math></span></span><script type="math/tex" id="MathJax-Element-4">0</script></span> and <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-5-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-50" style="width: 0.246em; display: inline-block;"><span style="display: inline-block; position: relative; width: 0.487em; height: 0px; font-size: 52%;"><span style="position: absolute; clip: rect(1.088em, 1000.37em, 2.53em, -999.994em); top: -2.157em; left: 0em;"><span class="mrow" id="MathJax-Span-51"><span class="mn" id="MathJax-Span-52" style="font-family: MathJax_Main;">1</span></span><span style="display: inline-block; width: 0px; height: 2.169em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.059em; border-left: 0px solid; width: 0px; height: 0.503em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mn>1</mn></math></span></span><script type="math/tex" id="MathJax-Element-5">1</script></span>
+that ensures the sum converges. It makes rewards from the uncertain far
+future less important for our agent than the ones in the near future
+that it can be fairly confident about.</p>
+<p>The main idea behind Q-learning is that if we had a function
+<span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-6-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;msup&gt;&lt;mi&gt;Q&lt;/mi&gt;&lt;mo&gt;&amp;#x2217;&lt;/mo&gt;&lt;/msup&gt;&lt;mo&gt;:&lt;/mo&gt;&lt;mi&gt;S&lt;/mi&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mi&gt;a&lt;/mi&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mi&gt;e&lt;/mi&gt;&lt;mo&gt;&amp;#x00D7;&lt;/mo&gt;&lt;mi&gt;A&lt;/mi&gt;&lt;mi&gt;c&lt;/mi&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mi&gt;i&lt;/mi&gt;&lt;mi&gt;o&lt;/mi&gt;&lt;mi&gt;n&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;&amp;#x2192;&lt;/mo&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mi mathvariant=&quot;double-struck&quot;&gt;R&lt;/mi&gt;&lt;/mrow&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-53" style="width: 5.655em; display: inline-block;"><span style="display: inline-block; position: relative; width: 10.823em; height: 0px; font-size: 52%;"><span style="position: absolute; clip: rect(1.328em, 1010.82em, 3.131em, -999.994em); top: -2.518em; left: 0em;"><span class="mrow" id="MathJax-Span-54"><span class="msubsup" id="MathJax-Span-55"><span style="display: inline-block; position: relative; width: 1.328em; height: 0px;"><span style="position: absolute; clip: rect(2.891em, 1000.73em, 4.573em, -999.994em); top: -3.96em; left: 0em;"><span class="mi" id="MathJax-Span-56" style="font-family: MathJax_Math-italic;">Q</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; top: -4.321em; left: 0.847em;"><span class="mo" id="MathJax-Span-57" style="font-size: 96.2%; font-family: MathJax_Main;">∗</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span></span><span class="mo" id="MathJax-Span-58" style="font-family: MathJax_Main; padding-left: 0.246em;">:</span><span class="mi" id="MathJax-Span-59" style="font-family: MathJax_Math-italic; padding-left: 0.246em;">S<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.006em;"></span></span><span class="mi" id="MathJax-Span-60" style="font-family: MathJax_Math-italic;">t</span><span class="mi" id="MathJax-Span-61" style="font-family: MathJax_Math-italic;">a</span><span class="mi" id="MathJax-Span-62" style="font-family: MathJax_Math-italic;">t</span><span class="mi" id="MathJax-Span-63" style="font-family: MathJax_Math-italic;">e</span><span class="mo" id="MathJax-Span-64" style="font-family: MathJax_Main; padding-left: 0.246em;">×</span><span class="mi" id="MathJax-Span-65" style="font-family: MathJax_Math-italic; padding-left: 0.246em;">A</span><span class="mi" id="MathJax-Span-66" style="font-family: MathJax_Math-italic;">c</span><span class="mi" id="MathJax-Span-67" style="font-family: MathJax_Math-italic;">t</span><span class="mi" id="MathJax-Span-68" style="font-family: MathJax_Math-italic;">i</span><span class="mi" id="MathJax-Span-69" style="font-family: MathJax_Math-italic;">o</span><span class="mi" id="MathJax-Span-70" style="font-family: MathJax_Math-italic;">n</span><span class="mo" id="MathJax-Span-71" style="font-family: MathJax_Main; padding-left: 0.246em;">→</span><span class="texatom" id="MathJax-Span-72" style="padding-left: 0.246em;"><span class="mrow" id="MathJax-Span-73"><span class="mi" id="MathJax-Span-74" style="font-family: MathJax_AMS;">R</span></span></span></span><span style="display: inline-block; width: 0px; height: 2.53em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.184em; border-left: 0px solid; width: 0px; height: 0.628em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><msup><mi>Q</mi><mo>∗</mo></msup><mo>:</mo><mi>S</mi><mi>t</mi><mi>a</mi><mi>t</mi><mi>e</mi><mo>×</mo><mi>A</mi><mi>c</mi><mi>t</mi><mi>i</mi><mi>o</mi><mi>n</mi><mo stretchy="false">→</mo><mrow class="MJX-TeXAtom-ORD"><mi mathvariant="double-struck">R</mi></mrow></math></span></span><script type="math/tex" id="MathJax-Element-6">Q^*: State \times Action \rightarrow \mathbb{R}</script></span>, that could tell
+us what our return would be, if we were to take an action in a given
+state, then we could easily construct a policy that maximizes our
+rewards:</p>
+<div class="math notranslate nohighlight">
+<span class="MathJax_Preview" style="color: inherit; display: none;"></span><div class="MathJax_Display" style="text-align: center;"><span class="MathJax" id="MathJax-Element-7-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot; display=&quot;block&quot;&gt;&lt;msup&gt;&lt;mi&gt;&amp;#x03C0;&lt;/mi&gt;&lt;mo&gt;&amp;#x2217;&lt;/mo&gt;&lt;/msup&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;s&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;mi&gt;arg&lt;/mi&gt;&lt;mspace width=&quot;negativethinmathspace&quot; /&gt;&lt;munder&gt;&lt;mo movablelimits=&quot;true&quot; form=&quot;prefix&quot;&gt;max&lt;/mo&gt;&lt;mi&gt;a&lt;/mi&gt;&lt;/munder&gt;&lt;mtext&gt;&amp;#xA0;&lt;/mtext&gt;&lt;msup&gt;&lt;mi&gt;Q&lt;/mi&gt;&lt;mo&gt;&amp;#x2217;&lt;/mo&gt;&lt;/msup&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;s&lt;/mi&gt;&lt;mo&gt;,&lt;/mo&gt;&lt;mi&gt;a&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="text-align: center; position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-75" style="width: 5.895em; display: inline-block;"><span style="display: inline-block; position: relative; width: 11.304em; height: 0px; font-size: 52%;"><span style="position: absolute; clip: rect(1.088em, 1011.18em, 3.371em, -999.994em); top: -2.278em; left: 0em;"><span class="mrow" id="MathJax-Span-76"><span class="msubsup" id="MathJax-Span-77"><span style="display: inline-block; position: relative; width: 1.208em; height: 0px;"><span style="position: absolute; clip: rect(3.131em, 1000.61em, 4.333em, -999.994em); top: -3.96em; left: 0em;"><span class="mi" id="MathJax-Span-78" style="font-family: MathJax_Math-italic;">π<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.006em;"></span></span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; top: -4.321em; left: 0.607em;"><span class="mo" id="MathJax-Span-79" style="font-size: 96.2%; font-family: MathJax_Main;">∗</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span></span><span class="mo" id="MathJax-Span-80" style="font-family: MathJax_Main;">(</span><span class="mi" id="MathJax-Span-81" style="font-family: MathJax_Math-italic;">s</span><span class="mo" id="MathJax-Span-82" style="font-family: MathJax_Main;">)</span><span class="mo" id="MathJax-Span-83" style="font-family: MathJax_Main; padding-left: 0.246em;">=</span><span class="mi" id="MathJax-Span-84" style="font-family: MathJax_Main; padding-left: 0.246em;">arg</span><span class="mspace" id="MathJax-Span-85" style="height: 0em; vertical-align: 0em; margin-left: -0.114em;"></span><span class="munderover" id="MathJax-Span-86" style="padding-left: 0.126em;"><span style="display: inline-block; position: relative; width: 1.809em; height: 0px;"><span style="position: absolute; clip: rect(3.131em, 1001.81em, 4.333em, -999.994em); top: -3.96em; left: 0em;"><span class="mo" id="MathJax-Span-87" style="font-family: MathJax_Main;">max</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; clip: rect(3.131em, 1000.49em, 4.453em, -999.994em); top: -3.359em; left: 0.727em;"><span class="mi" id="MathJax-Span-88" style="font-size: 96.2%; font-family: MathJax_Math-italic;">a</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span></span><span class="mtext" id="MathJax-Span-89" style="font-family: MathJax_Main; padding-left: 0.126em;">&nbsp;</span><span class="msubsup" id="MathJax-Span-90"><span style="display: inline-block; position: relative; width: 1.328em; height: 0px;"><span style="position: absolute; clip: rect(2.891em, 1000.73em, 4.573em, -999.994em); top: -3.96em; left: 0em;"><span class="mi" id="MathJax-Span-91" style="font-family: MathJax_Math-italic;">Q</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; top: -4.321em; left: 0.847em;"><span class="mo" id="MathJax-Span-92" style="font-size: 96.2%; font-family: MathJax_Main;">∗</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span></span><span class="mo" id="MathJax-Span-93" style="font-family: MathJax_Main;">(</span><span class="mi" id="MathJax-Span-94" style="font-family: MathJax_Math-italic;">s</span><span class="mo" id="MathJax-Span-95" style="font-family: MathJax_Main;">,</span><span class="mi" id="MathJax-Span-96" style="font-family: MathJax_Math-italic; padding-left: 0.126em;">a</span><span class="mo" id="MathJax-Span-97" style="font-family: MathJax_Main;">)</span></span><span style="display: inline-block; width: 0px; height: 2.29em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.434em; border-left: 0px solid; width: 0px; height: 0.941em;"></span></span></nobr><span class="MJX_Assistive_MathML MJX_Assistive_MathML_Block" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><msup><mi>π</mi><mo>∗</mo></msup><mo stretchy="false">(</mo><mi>s</mi><mo stretchy="false">)</mo><mo>=</mo><mi>arg</mi><mspace width="negativethinmathspace"></mspace><munder><mo movablelimits="true" form="prefix">max</mo><mi>a</mi></munder><mtext>&nbsp;</mtext><msup><mi>Q</mi><mo>∗</mo></msup><mo stretchy="false">(</mo><mi>s</mi><mo>,</mo><mi>a</mi><mo stretchy="false">)</mo></math></span></span></div><script type="math/tex; mode=display" id="MathJax-Element-7">\pi^*(s) = \arg\!\max_a \ Q^*(s, a)</script></div>
+<p>However, we don’t know everything about the world, so we don’t have
+access to <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-8-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;msup&gt;&lt;mi&gt;Q&lt;/mi&gt;&lt;mo&gt;&amp;#x2217;&lt;/mo&gt;&lt;/msup&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-98" style="width: 0.727em; display: inline-block;"><span style="display: inline-block; position: relative; width: 1.328em; height: 0px; font-size: 52%;"><span style="position: absolute; clip: rect(0.968em, 1001.33em, 2.77em, -999.994em); top: -2.157em; left: 0em;"><span class="mrow" id="MathJax-Span-99"><span class="msubsup" id="MathJax-Span-100"><span style="display: inline-block; position: relative; width: 1.328em; height: 0px;"><span style="position: absolute; clip: rect(2.891em, 1000.73em, 4.573em, -999.994em); top: -3.96em; left: 0em;"><span class="mi" id="MathJax-Span-101" style="font-family: MathJax_Math-italic;">Q</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; top: -4.321em; left: 0.847em;"><span class="mo" id="MathJax-Span-102" style="font-size: 96.2%; font-family: MathJax_Main;">∗</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.169em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.184em; border-left: 0px solid; width: 0px; height: 0.628em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><msup><mi>Q</mi><mo>∗</mo></msup></math></span></span><script type="math/tex" id="MathJax-Element-8">Q^*</script></span>. But, since neural networks are universal function
+approximators, we can simply create one and train it to resemble
+<span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-9-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;msup&gt;&lt;mi&gt;Q&lt;/mi&gt;&lt;mo&gt;&amp;#x2217;&lt;/mo&gt;&lt;/msup&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-103" style="width: 0.727em; display: inline-block;"><span style="display: inline-block; position: relative; width: 1.328em; height: 0px; font-size: 52%;"><span style="position: absolute; clip: rect(0.968em, 1001.33em, 2.77em, -999.994em); top: -2.157em; left: 0em;"><span class="mrow" id="MathJax-Span-104"><span class="msubsup" id="MathJax-Span-105"><span style="display: inline-block; position: relative; width: 1.328em; height: 0px;"><span style="position: absolute; clip: rect(2.891em, 1000.73em, 4.573em, -999.994em); top: -3.96em; left: 0em;"><span class="mi" id="MathJax-Span-106" style="font-family: MathJax_Math-italic;">Q</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; top: -4.321em; left: 0.847em;"><span class="mo" id="MathJax-Span-107" style="font-size: 96.2%; font-family: MathJax_Main;">∗</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.169em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.184em; border-left: 0px solid; width: 0px; height: 0.628em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><msup><mi>Q</mi><mo>∗</mo></msup></math></span></span><script type="math/tex" id="MathJax-Element-9">Q^*</script></span>.</p>
+<p>For our training update rule, we’ll use a fact that every <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-10-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;Q&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-108" style="width: 0.487em; display: inline-block;"><span style="display: inline-block; position: relative; width: 0.847em; height: 0px; font-size: 52%;"><span style="position: absolute; clip: rect(1.088em, 1000.85em, 2.77em, -999.994em); top: -2.157em; left: 0em;"><span class="mrow" id="MathJax-Span-109"><span class="mi" id="MathJax-Span-110" style="font-family: MathJax_Math-italic;">Q</span></span><span style="display: inline-block; width: 0px; height: 2.169em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.184em; border-left: 0px solid; width: 0px; height: 0.566em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>Q</mi></math></span></span><script type="math/tex" id="MathJax-Element-10">Q</script></span>
+function for some policy obeys the Bellman equation:</p>
+<div class="math notranslate nohighlight">
+<span class="MathJax_Preview" style="color: inherit; display: none;"></span><div class="MathJax_Display" style="text-align: center;"><span class="MathJax" id="MathJax-Element-11-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot; display=&quot;block&quot;&gt;&lt;msup&gt;&lt;mi&gt;Q&lt;/mi&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mi&gt;&amp;#x03C0;&lt;/mi&gt;&lt;/mrow&gt;&lt;/msup&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;s&lt;/mi&gt;&lt;mo&gt;,&lt;/mo&gt;&lt;mi&gt;a&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;mi&gt;r&lt;/mi&gt;&lt;mo&gt;+&lt;/mo&gt;&lt;mi&gt;&amp;#x03B3;&lt;/mi&gt;&lt;msup&gt;&lt;mi&gt;Q&lt;/mi&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mi&gt;&amp;#x03C0;&lt;/mi&gt;&lt;/mrow&gt;&lt;/msup&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;msup&gt;&lt;mi&gt;s&lt;/mi&gt;&lt;mo&gt;&amp;#x2032;&lt;/mo&gt;&lt;/msup&gt;&lt;mo&gt;,&lt;/mo&gt;&lt;mi&gt;&amp;#x03C0;&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;msup&gt;&lt;mi&gt;s&lt;/mi&gt;&lt;mo&gt;&amp;#x2032;&lt;/mo&gt;&lt;/msup&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="text-align: center; position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-111" style="width: 6.977em; display: inline-block;"><span style="display: inline-block; position: relative; width: 13.347em; height: 0px; font-size: 52%;"><span style="position: absolute; clip: rect(0.968em, 1013.23em, 2.891em, -999.994em); top: -2.278em; left: 0em;"><span class="mrow" id="MathJax-Span-112"><span class="msubsup" id="MathJax-Span-113"><span style="display: inline-block; position: relative; width: 1.448em; height: 0px;"><span style="position: absolute; clip: rect(2.891em, 1000.73em, 4.573em, -999.994em); top: -3.96em; left: 0em;"><span class="mi" id="MathJax-Span-114" style="font-family: MathJax_Math-italic;">Q</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; top: -4.321em; left: 0.847em;"><span class="texatom" id="MathJax-Span-115"><span class="mrow" id="MathJax-Span-116"><span class="mi" id="MathJax-Span-117" style="font-size: 96.2%; font-family: MathJax_Math-italic;">π<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.006em;"></span></span></span></span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span></span><span class="mo" id="MathJax-Span-118" style="font-family: MathJax_Main;">(</span><span class="mi" id="MathJax-Span-119" style="font-family: MathJax_Math-italic;">s</span><span class="mo" id="MathJax-Span-120" style="font-family: MathJax_Main;">,</span><span class="mi" id="MathJax-Span-121" style="font-family: MathJax_Math-italic; padding-left: 0.126em;">a</span><span class="mo" id="MathJax-Span-122" style="font-family: MathJax_Main;">)</span><span class="mo" id="MathJax-Span-123" style="font-family: MathJax_Main; padding-left: 0.246em;">=</span><span class="mi" id="MathJax-Span-124" style="font-family: MathJax_Math-italic; padding-left: 0.246em;">r</span><span class="mo" id="MathJax-Span-125" style="font-family: MathJax_Main; padding-left: 0.246em;">+</span><span class="mi" id="MathJax-Span-126" style="font-family: MathJax_Math-italic; padding-left: 0.246em;">γ<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.006em;"></span></span><span class="msubsup" id="MathJax-Span-127"><span style="display: inline-block; position: relative; width: 1.448em; height: 0px;"><span style="position: absolute; clip: rect(2.891em, 1000.73em, 4.573em, -999.994em); top: -3.96em; left: 0em;"><span class="mi" id="MathJax-Span-128" style="font-family: MathJax_Math-italic;">Q</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; top: -4.321em; left: 0.847em;"><span class="texatom" id="MathJax-Span-129"><span class="mrow" id="MathJax-Span-130"><span class="mi" id="MathJax-Span-131" style="font-size: 96.2%; font-family: MathJax_Math-italic;">π<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.006em;"></span></span></span></span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span></span><span class="mo" id="MathJax-Span-132" style="font-family: MathJax_Main;">(</span><span class="msup" id="MathJax-Span-133"><span style="display: inline-block; position: relative; width: 0.847em; height: 0px;"><span style="position: absolute; clip: rect(3.131em, 1000.37em, 4.333em, -999.994em); top: -3.96em; left: 0em;"><span class="mi" id="MathJax-Span-134" style="font-family: MathJax_Math-italic;">s</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; top: -4.321em; left: 0.487em;"><span class="mo" id="MathJax-Span-135" style="font-size: 96.2%; font-family: MathJax_Main;">′</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span></span><span class="mo" id="MathJax-Span-136" style="font-family: MathJax_Main;">,</span><span class="mi" id="MathJax-Span-137" style="font-family: MathJax_Math-italic; padding-left: 0.126em;">π<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.006em;"></span></span><span class="mo" id="MathJax-Span-138" style="font-family: MathJax_Main;">(</span><span class="msup" id="MathJax-Span-139"><span style="display: inline-block; position: relative; width: 0.847em; height: 0px;"><span style="position: absolute; clip: rect(3.131em, 1000.37em, 4.333em, -999.994em); top: -3.96em; left: 0em;"><span class="mi" id="MathJax-Span-140" style="font-family: MathJax_Math-italic;">s</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; top: -4.321em; left: 0.487em;"><span class="mo" id="MathJax-Span-141" style="font-size: 96.2%; font-family: MathJax_Main;">′</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span></span><span class="mo" id="MathJax-Span-142" style="font-family: MathJax_Main;">)</span><span class="mo" id="MathJax-Span-143" style="font-family: MathJax_Main;">)</span></span><span style="display: inline-block; width: 0px; height: 2.29em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.184em; border-left: 0px solid; width: 0px; height: 0.753em;"></span></span></nobr><span class="MJX_Assistive_MathML MJX_Assistive_MathML_Block" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><msup><mi>Q</mi><mrow class="MJX-TeXAtom-ORD"><mi>π</mi></mrow></msup><mo stretchy="false">(</mo><mi>s</mi><mo>,</mo><mi>a</mi><mo stretchy="false">)</mo><mo>=</mo><mi>r</mi><mo>+</mo><mi>γ</mi><msup><mi>Q</mi><mrow class="MJX-TeXAtom-ORD"><mi>π</mi></mrow></msup><mo stretchy="false">(</mo><msup><mi>s</mi><mo>′</mo></msup><mo>,</mo><mi>π</mi><mo stretchy="false">(</mo><msup><mi>s</mi><mo>′</mo></msup><mo stretchy="false">)</mo><mo stretchy="false">)</mo></math></span></span></div><script type="math/tex; mode=display" id="MathJax-Element-11">Q^{\pi}(s, a) = r + \gamma Q^{\pi}(s', \pi(s'))</script></div>
+<p>The difference between the two sides of the equality is known as the
+temporal difference error, <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-12-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;&amp;#x03B4;&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-144" style="width: 0.246em; display: inline-block;"><span style="display: inline-block; position: relative; width: 0.487em; height: 0px; font-size: 52%;"><span style="position: absolute; clip: rect(1.088em, 1000.49em, 2.53em, -999.994em); top: -2.157em; left: 0em;"><span class="mrow" id="MathJax-Span-145"><span class="mi" id="MathJax-Span-146" style="font-family: MathJax_Math-italic;">δ<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.006em;"></span></span></span><span style="display: inline-block; width: 0px; height: 2.169em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.059em; border-left: 0px solid; width: 0px; height: 0.503em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>δ</mi></math></span></span><script type="math/tex" id="MathJax-Element-12">\delta</script></span>:</p>
+<div class="math notranslate nohighlight">
+<span class="MathJax_Preview" style="color: inherit; display: none;"></span><div class="MathJax_Display" style="text-align: center;"><span class="MathJax" id="MathJax-Element-13-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot; display=&quot;block&quot;&gt;&lt;mi&gt;&amp;#x03B4;&lt;/mi&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;mi&gt;Q&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;s&lt;/mi&gt;&lt;mo&gt;,&lt;/mo&gt;&lt;mi&gt;a&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo&gt;&amp;#x2212;&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;r&lt;/mi&gt;&lt;mo&gt;+&lt;/mo&gt;&lt;mi&gt;&amp;#x03B3;&lt;/mi&gt;&lt;munder&gt;&lt;mo movablelimits=&quot;true&quot; form=&quot;prefix&quot;&gt;max&lt;/mo&gt;&lt;mi&gt;a&lt;/mi&gt;&lt;/munder&gt;&lt;mi&gt;Q&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;msup&gt;&lt;mi&gt;s&lt;/mi&gt;&lt;mo&gt;&amp;#x2032;&lt;/mo&gt;&lt;/msup&gt;&lt;mo&gt;,&lt;/mo&gt;&lt;mi&gt;a&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="text-align: center; position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-147" style="width: 7.819em; display: inline-block;"><span style="display: inline-block; position: relative; width: 14.91em; height: 0px; font-size: 52%;"><span style="position: absolute; clip: rect(0.968em, 1014.79em, 3.371em, -999.994em); top: -2.278em; left: 0em;"><span class="mrow" id="MathJax-Span-148"><span class="mi" id="MathJax-Span-149" style="font-family: MathJax_Math-italic;">δ<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.006em;"></span></span><span class="mo" id="MathJax-Span-150" style="font-family: MathJax_Main; padding-left: 0.246em;">=</span><span class="mi" id="MathJax-Span-151" style="font-family: MathJax_Math-italic; padding-left: 0.246em;">Q</span><span class="mo" id="MathJax-Span-152" style="font-family: MathJax_Main;">(</span><span class="mi" id="MathJax-Span-153" style="font-family: MathJax_Math-italic;">s</span><span class="mo" id="MathJax-Span-154" style="font-family: MathJax_Main;">,</span><span class="mi" id="MathJax-Span-155" style="font-family: MathJax_Math-italic; padding-left: 0.126em;">a</span><span class="mo" id="MathJax-Span-156" style="font-family: MathJax_Main;">)</span><span class="mo" id="MathJax-Span-157" style="font-family: MathJax_Main; padding-left: 0.246em;">−</span><span class="mo" id="MathJax-Span-158" style="font-family: MathJax_Main; padding-left: 0.246em;">(</span><span class="mi" id="MathJax-Span-159" style="font-family: MathJax_Math-italic;">r</span><span class="mo" id="MathJax-Span-160" style="font-family: MathJax_Main; padding-left: 0.246em;">+</span><span class="mi" id="MathJax-Span-161" style="font-family: MathJax_Math-italic; padding-left: 0.246em;">γ<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.006em;"></span></span><span class="munderover" id="MathJax-Span-162" style="padding-left: 0.126em;"><span style="display: inline-block; position: relative; width: 1.809em; height: 0px;"><span style="position: absolute; clip: rect(3.131em, 1001.81em, 4.333em, -999.994em); top: -3.96em; left: 0em;"><span class="mo" id="MathJax-Span-163" style="font-family: MathJax_Main;">max</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; clip: rect(3.131em, 1000.49em, 4.453em, -999.994em); top: -3.359em; left: 0.727em;"><span class="mi" id="MathJax-Span-164" style="font-size: 96.2%; font-family: MathJax_Math-italic;">a</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span></span><span class="mi" id="MathJax-Span-165" style="font-family: MathJax_Math-italic; padding-left: 0.126em;">Q</span><span class="mo" id="MathJax-Span-166" style="font-family: MathJax_Main;">(</span><span class="msup" id="MathJax-Span-167"><span style="display: inline-block; position: relative; width: 0.847em; height: 0px;"><span style="position: absolute; clip: rect(3.131em, 1000.37em, 4.333em, -999.994em); top: -3.96em; left: 0em;"><span class="mi" id="MathJax-Span-168" style="font-family: MathJax_Math-italic;">s</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; top: -4.321em; left: 0.487em;"><span class="mo" id="MathJax-Span-169" style="font-size: 96.2%; font-family: MathJax_Main;">′</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span></span><span class="mo" id="MathJax-Span-170" style="font-family: MathJax_Main;">,</span><span class="mi" id="MathJax-Span-171" style="font-family: MathJax_Math-italic; padding-left: 0.126em;">a</span><span class="mo" id="MathJax-Span-172" style="font-family: MathJax_Main;">)</span><span class="mo" id="MathJax-Span-173" style="font-family: MathJax_Main;">)</span></span><span style="display: inline-block; width: 0px; height: 2.29em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.434em; border-left: 0px solid; width: 0px; height: 1.003em;"></span></span></nobr><span class="MJX_Assistive_MathML MJX_Assistive_MathML_Block" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mi>δ</mi><mo>=</mo><mi>Q</mi><mo stretchy="false">(</mo><mi>s</mi><mo>,</mo><mi>a</mi><mo stretchy="false">)</mo><mo>−</mo><mo stretchy="false">(</mo><mi>r</mi><mo>+</mo><mi>γ</mi><munder><mo movablelimits="true" form="prefix">max</mo><mi>a</mi></munder><mi>Q</mi><mo stretchy="false">(</mo><msup><mi>s</mi><mo>′</mo></msup><mo>,</mo><mi>a</mi><mo stretchy="false">)</mo><mo stretchy="false">)</mo></math></span></span></div><script type="math/tex; mode=display" id="MathJax-Element-13">\delta = Q(s, a) - (r + \gamma \max_a Q(s', a))</script></div>
+<p>To minimise this error, we will use the <a class="reference external" href="https://en.wikipedia.org/wiki/Huber_loss">Huber
+loss</a>. The Huber loss acts
+like the mean squared error when the error is small, but like the mean
+absolute error when the error is large - this makes it more robust to
+outliers when the estimates of <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-14-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;Q&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-174" style="width: 0.487em; display: inline-block;"><span style="display: inline-block; position: relative; width: 0.847em; height: 0px; font-size: 52%;"><span style="position: absolute; clip: rect(1.088em, 1000.85em, 2.77em, -999.994em); top: -2.157em; left: 0em;"><span class="mrow" id="MathJax-Span-175"><span class="mi" id="MathJax-Span-176" style="font-family: MathJax_Math-italic;">Q</span></span><span style="display: inline-block; width: 0px; height: 2.169em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.184em; border-left: 0px solid; width: 0px; height: 0.566em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>Q</mi></math></span></span><script type="math/tex" id="MathJax-Element-14">Q</script></span> are very noisy. We calculate
+this over a batch of transitions, <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-15-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;B&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-177" style="width: 0.367em; display: inline-block;"><span style="display: inline-block; position: relative; width: 0.727em; height: 0px; font-size: 52%;"><span style="position: absolute; clip: rect(1.088em, 1000.73em, 2.53em, -999.994em); top: -2.157em; left: 0em;"><span class="mrow" id="MathJax-Span-178"><span class="mi" id="MathJax-Span-179" style="font-family: MathJax_Math-italic;">B</span></span><span style="display: inline-block; width: 0px; height: 2.169em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.059em; border-left: 0px solid; width: 0px; height: 0.503em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>B</mi></math></span></span><script type="math/tex" id="MathJax-Element-15">B</script></span>, sampled from the replay
+memory:</p>
+<div class="math notranslate nohighlight">
+<span class="MathJax_Preview" style="color: inherit; display: none;"></span><div class="MathJax_Display" style="text-align: center;"><span class="MathJax" id="MathJax-Element-16-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot; display=&quot;block&quot;&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mi class=&quot;MJX-tex-caligraphic&quot; mathvariant=&quot;script&quot;&gt;L&lt;/mi&gt;&lt;/mrow&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;mfrac&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;mrow&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mo stretchy=&quot;false&quot;&gt;|&lt;/mo&gt;&lt;/mrow&gt;&lt;mi&gt;B&lt;/mi&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mo stretchy=&quot;false&quot;&gt;|&lt;/mo&gt;&lt;/mrow&gt;&lt;/mrow&gt;&lt;/mfrac&gt;&lt;munder&gt;&lt;mo&gt;&amp;#x2211;&lt;/mo&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;s&lt;/mi&gt;&lt;mo&gt;,&lt;/mo&gt;&lt;mi&gt;a&lt;/mi&gt;&lt;mo&gt;,&lt;/mo&gt;&lt;msup&gt;&lt;mi&gt;s&lt;/mi&gt;&lt;mo&gt;&amp;#x2032;&lt;/mo&gt;&lt;/msup&gt;&lt;mo&gt;,&lt;/mo&gt;&lt;mi&gt;r&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mtext&gt;&amp;#xA0;&lt;/mtext&gt;&lt;mo&gt;&amp;#x2208;&lt;/mo&gt;&lt;mtext&gt;&amp;#xA0;&lt;/mtext&gt;&lt;mi&gt;B&lt;/mi&gt;&lt;/mrow&gt;&lt;/munder&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mi class=&quot;MJX-tex-caligraphic&quot; mathvariant=&quot;script&quot;&gt;L&lt;/mi&gt;&lt;/mrow&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;&amp;#x03B4;&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="text-align: center; position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-180" style="width: 6.256em; display: inline-block;"><span style="display: inline-block; position: relative; width: 11.905em; height: 0px; font-size: 52%;"><span style="position: absolute; clip: rect(0.607em, 1011.78em, 4.453em, -999.994em); top: -2.278em; left: 0em;"><span class="mrow" id="MathJax-Span-181"><span class="texatom" id="MathJax-Span-182"><span class="mrow" id="MathJax-Span-183"><span class="mi" id="MathJax-Span-184" style="font-family: MathJax_Caligraphic;">L</span></span></span><span class="mo" id="MathJax-Span-185" style="font-family: MathJax_Main; padding-left: 0.246em;">=</span><span class="mfrac" id="MathJax-Span-186" style="padding-left: 0.246em;"><span style="display: inline-block; position: relative; width: 1.448em; height: 0px; margin-right: 0.126em; margin-left: 0.126em;"><span style="position: absolute; clip: rect(2.891em, 1000.49em, 4.333em, -999.994em); top: -4.681em; left: 50%; margin-left: -0.234em;"><span class="mn" id="MathJax-Span-187" style="font-family: MathJax_Main;">1</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; clip: rect(2.891em, 1001.21em, 4.573em, -999.994em); top: -3.119em; left: 50%; margin-left: -0.595em;"><span class="mrow" id="MathJax-Span-188"><span class="texatom" id="MathJax-Span-189"><span class="mrow" id="MathJax-Span-190"><span class="mo" id="MathJax-Span-191" style="font-family: MathJax_Main;">|</span></span></span><span class="mi" id="MathJax-Span-192" style="font-family: MathJax_Math-italic;">B</span><span class="texatom" id="MathJax-Span-193"><span class="mrow" id="MathJax-Span-194"><span class="mo" id="MathJax-Span-195" style="font-family: MathJax_Main;">|</span></span></span></span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; clip: rect(0.727em, 1001.45em, 1.569em, -999.994em); top: -1.436em; left: 0em;"><span style="display: inline-block; overflow: hidden; vertical-align: 0em; border-top: 1.3px solid; width: 1.448em; height: 0px;"></span><span style="display: inline-block; width: 0px; height: 1.208em;"></span></span></span></span><span class="munderover" id="MathJax-Span-196" style="padding-left: 0.126em;"><span style="display: inline-block; position: relative; width: 5.535em; height: 0px;"><span style="position: absolute; clip: rect(2.65em, 1001.45em, 4.814em, -999.994em); top: -3.96em; left: 2.049em;"><span class="mo" id="MathJax-Span-197" style="font-family: MathJax_Size2; vertical-align: 0em;">∑</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; clip: rect(2.77em, 1005.53em, 4.694em, -999.994em); top: -2.398em; left: 0em;"><span class="texatom" id="MathJax-Span-198"><span class="mrow" id="MathJax-Span-199"><span class="mo" id="MathJax-Span-200" style="font-size: 96.2%; font-family: MathJax_Main;">(</span><span class="mi" id="MathJax-Span-201" style="font-size: 96.2%; font-family: MathJax_Math-italic;">s</span><span class="mo" id="MathJax-Span-202" style="font-size: 96.2%; font-family: MathJax_Main;">,</span><span class="mi" id="MathJax-Span-203" style="font-size: 96.2%; font-family: MathJax_Math-italic;">a</span><span class="mo" id="MathJax-Span-204" style="font-size: 96.2%; font-family: MathJax_Main;">,</span><span class="msup" id="MathJax-Span-205"><span style="display: inline-block; position: relative; width: 0.847em; height: 0px;"><span style="position: absolute; clip: rect(3.131em, 1000.37em, 4.333em, -999.994em); top: -3.96em; left: 0em;"><span class="mi" id="MathJax-Span-206" style="font-size: 96.2%; font-family: MathJax_Math-italic;">s</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; top: -4.321em; left: 0.487em;"><span class="mo" id="MathJax-Span-207" style="font-size: 96.2%; font-family: MathJax_Main;">′</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span></span><span class="mo" id="MathJax-Span-208" style="font-size: 96.2%; font-family: MathJax_Main;">,</span><span class="mi" id="MathJax-Span-209" style="font-size: 96.2%; font-family: MathJax_Math-italic;">r</span><span class="mo" id="MathJax-Span-210" style="font-size: 96.2%; font-family: MathJax_Main;">)</span><span class="mtext" id="MathJax-Span-211" style="font-size: 96.2%; font-family: MathJax_Main;">&nbsp;</span><span class="mo" id="MathJax-Span-212" style="font-size: 96.2%; font-family: MathJax_Main;">∈</span><span class="mtext" id="MathJax-Span-213" style="font-size: 96.2%; font-family: MathJax_Main;">&nbsp;</span><span class="mi" id="MathJax-Span-214" style="font-size: 96.2%; font-family: MathJax_Math-italic;">B</span></span></span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span></span><span class="texatom" id="MathJax-Span-215" style="padding-left: 0.126em;"><span class="mrow" id="MathJax-Span-216"><span class="mi" id="MathJax-Span-217" style="font-family: MathJax_Caligraphic;">L</span></span></span><span class="mo" id="MathJax-Span-218" style="font-family: MathJax_Main;">(</span><span class="mi" id="MathJax-Span-219" style="font-family: MathJax_Math-italic;">δ<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.006em;"></span></span><span class="mo" id="MathJax-Span-220" style="font-family: MathJax_Main;">)</span></span><span style="display: inline-block; width: 0px; height: 2.29em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.997em; border-left: 0px solid; width: 0px; height: 1.816em;"></span></span></nobr><span class="MJX_Assistive_MathML MJX_Assistive_MathML_Block" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow class="MJX-TeXAtom-ORD"><mi class="MJX-tex-caligraphic" mathvariant="script">L</mi></mrow><mo>=</mo><mfrac><mn>1</mn><mrow><mrow class="MJX-TeXAtom-ORD"><mo stretchy="false">|</mo></mrow><mi>B</mi><mrow class="MJX-TeXAtom-ORD"><mo stretchy="false">|</mo></mrow></mrow></mfrac><munder><mo>∑</mo><mrow class="MJX-TeXAtom-ORD"><mo stretchy="false">(</mo><mi>s</mi><mo>,</mo><mi>a</mi><mo>,</mo><msup><mi>s</mi><mo>′</mo></msup><mo>,</mo><mi>r</mi><mo stretchy="false">)</mo><mtext>&nbsp;</mtext><mo>∈</mo><mtext>&nbsp;</mtext><mi>B</mi></mrow></munder><mrow class="MJX-TeXAtom-ORD"><mi class="MJX-tex-caligraphic" mathvariant="script">L</mi></mrow><mo stretchy="false">(</mo><mi>δ</mi><mo stretchy="false">)</mo></math></span></span></div><script type="math/tex; mode=display" id="MathJax-Element-16">\mathcal{L} = \frac{1}{|B|}\sum_{(s, a, s', r) \ \in \ B} \mathcal{L}(\delta)</script></div>
+<div class="math notranslate nohighlight">
+<span class="MathJax_Preview" style="color: inherit; display: none;"></span><div class="MathJax_Display" style="text-align: center;"><span class="MathJax" id="MathJax-Element-17-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot; display=&quot;block&quot;&gt;&lt;mtable columnalign=&quot;right left&quot; rowspacing=&quot;3pt&quot; columnspacing=&quot;0em&quot; displaystyle=&quot;true&quot;&gt;&lt;mtr&gt;&lt;mtd&gt;&lt;mtext&gt;where&lt;/mtext&gt;&lt;mspace width=&quot;1em&quot; /&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mi class=&quot;MJX-tex-caligraphic&quot; mathvariant=&quot;script&quot;&gt;L&lt;/mi&gt;&lt;/mrow&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;&amp;#x03B4;&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;mrow&gt;&lt;mo&gt;{&lt;/mo&gt;&lt;mtable columnalign=&quot;left left&quot; rowspacing=&quot;.2em&quot; columnspacing=&quot;1em&quot; displaystyle=&quot;false&quot;&gt;&lt;mtr&gt;&lt;mtd&gt;&lt;mfrac&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;mn&gt;2&lt;/mn&gt;&lt;/mfrac&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;msup&gt;&lt;mi&gt;&amp;#x03B4;&lt;/mi&gt;&lt;mn&gt;2&lt;/mn&gt;&lt;/msup&gt;&lt;/mrow&gt;&lt;/mtd&gt;&lt;mtd&gt;&lt;mtext&gt;for&amp;#xA0;&lt;/mtext&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mo stretchy=&quot;false&quot;&gt;|&lt;/mo&gt;&lt;/mrow&gt;&lt;mi&gt;&amp;#x03B4;&lt;/mi&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mo stretchy=&quot;false&quot;&gt;|&lt;/mo&gt;&lt;/mrow&gt;&lt;mo&gt;&amp;#x2264;&lt;/mo&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;mo&gt;,&lt;/mo&gt;&lt;/mtd&gt;&lt;/mtr&gt;&lt;mtr&gt;&lt;mtd&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mo stretchy=&quot;false&quot;&gt;|&lt;/mo&gt;&lt;/mrow&gt;&lt;mi&gt;&amp;#x03B4;&lt;/mi&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mo stretchy=&quot;false&quot;&gt;|&lt;/mo&gt;&lt;/mrow&gt;&lt;mo&gt;&amp;#x2212;&lt;/mo&gt;&lt;mfrac&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;mn&gt;2&lt;/mn&gt;&lt;/mfrac&gt;&lt;/mtd&gt;&lt;mtd&gt;&lt;mtext&gt;otherwise.&lt;/mtext&gt;&lt;/mtd&gt;&lt;/mtr&gt;&lt;/mtable&gt;&lt;mo fence=&quot;true&quot; stretchy=&quot;true&quot; symmetric=&quot;true&quot;&gt;&lt;/mo&gt;&lt;/mrow&gt;&lt;/mtd&gt;&lt;/mtr&gt;&lt;/mtable&gt;&lt;/math&gt;" role="presentation" style="text-align: center; position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-221" style="width: 9.261em; display: inline-block;"><span style="display: inline-block; position: relative; width: 17.674em; height: 0px; font-size: 52%;"><span style="position: absolute; clip: rect(-0.234em, 1017.55em, 4.333em, -999.994em); top: -2.278em; left: 0em;"><span class="mrow" id="MathJax-Span-222"><span class="mtable" id="MathJax-Span-223" style="padding-right: 0.126em; padding-left: 0.126em;"><span style="display: inline-block; position: relative; width: 16.472em; height: 0px;"><span style="position: absolute; clip: rect(2.41em, 1016.47em, 6.977em, -999.994em); top: -4.922em; left: 0em;"><span style="display: inline-block; position: relative; width: 16.472em; height: 0px;"><span style="position: absolute; clip: rect(2.41em, 1016.47em, 6.977em, -999.994em); top: -4.922em; right: 0em;"><span class="mtd" id="MathJax-Span-224"><span class="mrow" id="MathJax-Span-225"><span class="mtext" id="MathJax-Span-226" style="font-family: MathJax_Main;">where</span><span class="mspace" id="MathJax-Span-227" style="height: 0em; vertical-align: 0em; width: 0.968em; display: inline-block; overflow: hidden;"></span><span class="texatom" id="MathJax-Span-228"><span class="mrow" id="MathJax-Span-229"><span class="mi" id="MathJax-Span-230" style="font-family: MathJax_Caligraphic;">L</span></span></span><span class="mo" id="MathJax-Span-231" style="font-family: MathJax_Main;">(</span><span class="mi" id="MathJax-Span-232" style="font-family: MathJax_Math-italic;">δ<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.006em;"></span></span><span class="mo" id="MathJax-Span-233" style="font-family: MathJax_Main;">)</span><span class="mo" id="MathJax-Span-234" style="font-family: MathJax_Main; padding-left: 0.246em;">=</span><span class="mrow" id="MathJax-Span-235" style="padding-left: 0.246em;"><span class="mo" id="MathJax-Span-236" style="vertical-align: 2.169em;"><span style="display: inline-block; position: relative; width: 0.847em; height: 0px;"><span style="position: absolute; font-family: MathJax_Size4; top: -3.119em; left: 0em;">⎧<span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; font-family: MathJax_Size4; top: -0.956em; left: 0em;">⎩<span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; font-family: MathJax_Size4; top: -1.797em; left: 0em;">⎨<span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="font-family: MathJax_Size4; position: absolute; top: -2.879em; left: 0em;">⎪<span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="font-family: MathJax_Size4; position: absolute; top: -0.835em; left: 0em;">⎪<span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span></span><span class="mtable" id="MathJax-Span-237" style="padding-right: 0.126em; padding-left: 0.126em;"><span style="display: inline-block; position: relative; width: 8.66em; height: 0px;"><span style="position: absolute; clip: rect(2.41em, 1003.13em, 6.977em, -999.994em); top: -4.922em; left: 0em;"><span style="display: inline-block; position: relative; width: 3.131em; height: 0px;"><span style="position: absolute; clip: rect(2.41em, 1001.93em, 5.054em, -999.994em); top: -5.042em; left: 0em;"><span class="mtd" id="MathJax-Span-238"><span class="mrow" id="MathJax-Span-239"><span class="mfrac" id="MathJax-Span-240"><span style="display: inline-block; position: relative; width: 0.607em; height: 0px; margin-right: 0.126em; margin-left: 0.126em;"><span style="position: absolute; clip: rect(3.011em, 1000.37em, 4.333em, -999.994em); top: -4.441em; left: 50%; margin-left: -0.234em;"><span class="mn" id="MathJax-Span-241" style="font-size: 96.2%; font-family: MathJax_Main;">1</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; clip: rect(3.011em, 1000.49em, 4.333em, -999.994em); top: -3.239em; left: 50%; margin-left: -0.234em;"><span class="mn" id="MathJax-Span-242" style="font-size: 96.2%; font-family: MathJax_Main;">2</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; clip: rect(0.727em, 1000.61em, 1.569em, -999.994em); top: -1.436em; left: 0em;"><span style="display: inline-block; overflow: hidden; vertical-align: 0em; border-top: 1.3px solid; width: 0.607em; height: 0px;"></span><span style="display: inline-block; width: 0px; height: 1.208em;"></span></span></span></span><span class="texatom" id="MathJax-Span-243"><span class="mrow" id="MathJax-Span-244"><span class="msubsup" id="MathJax-Span-245"><span style="display: inline-block; position: relative; width: 1.088em; height: 0px;"><span style="position: absolute; clip: rect(2.891em, 1000.49em, 4.333em, -999.994em); top: -3.96em; left: 0em;"><span class="mi" id="MathJax-Span-246" style="font-family: MathJax_Math-italic;">δ<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.006em;"></span></span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; top: -4.321em; left: 0.487em;"><span class="mn" id="MathJax-Span-247" style="font-size: 96.2%; font-family: MathJax_Main;">2</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; clip: rect(2.41em, 1003.13em, 5.054em, -999.994em); top: -2.879em; left: 0em;"><span class="mtd" id="MathJax-Span-261"><span class="mrow" id="MathJax-Span-262"><span class="texatom" id="MathJax-Span-263"><span class="mrow" id="MathJax-Span-264"><span class="mo" id="MathJax-Span-265" style="font-family: MathJax_Main;">|</span></span></span><span class="mi" id="MathJax-Span-266" style="font-family: MathJax_Math-italic;">δ<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.006em;"></span></span><span class="texatom" id="MathJax-Span-267"><span class="mrow" id="MathJax-Span-268"><span class="mo" id="MathJax-Span-269" style="font-family: MathJax_Main;">|</span></span></span><span class="mo" id="MathJax-Span-270" style="font-family: MathJax_Main; padding-left: 0.246em;">−</span><span class="mfrac" id="MathJax-Span-271" style="padding-left: 0.246em;"><span style="display: inline-block; position: relative; width: 0.607em; height: 0px; margin-right: 0.126em; margin-left: 0.126em;"><span style="position: absolute; clip: rect(3.011em, 1000.37em, 4.333em, -999.994em); top: -4.441em; left: 50%; margin-left: -0.234em;"><span class="mn" id="MathJax-Span-272" style="font-size: 96.2%; font-family: MathJax_Main;">1</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; clip: rect(3.011em, 1000.49em, 4.333em, -999.994em); top: -3.239em; left: 50%; margin-left: -0.234em;"><span class="mn" id="MathJax-Span-273" style="font-size: 96.2%; font-family: MathJax_Main;">2</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; clip: rect(0.727em, 1000.61em, 1.569em, -999.994em); top: -1.436em; left: 0em;"><span style="display: inline-block; overflow: hidden; vertical-align: 0em; border-top: 1.3px solid; width: 0.607em; height: 0px;"></span><span style="display: inline-block; width: 0px; height: 1.208em;"></span></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span><span style="display: inline-block; width: 0px; height: 4.934em;"></span></span><span style="position: absolute; clip: rect(1.809em, 1004.45em, 5.415em, -999.994em); top: -3.96em; left: 4.093em;"><span style="display: inline-block; position: relative; width: 4.453em; height: 0px;"><span style="position: absolute; clip: rect(2.891em, 1004.45em, 4.573em, -999.994em); top: -5.042em; left: 0em;"><span class="mtd" id="MathJax-Span-248"><span class="mrow" id="MathJax-Span-249"><span class="mtext" id="MathJax-Span-250" style="font-family: MathJax_Main;">for&nbsp;</span><span class="texatom" id="MathJax-Span-251"><span class="mrow" id="MathJax-Span-252"><span class="mo" id="MathJax-Span-253" style="font-family: MathJax_Main;">|</span></span></span><span class="mi" id="MathJax-Span-254" style="font-family: MathJax_Math-italic;">δ<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.006em;"></span></span><span class="texatom" id="MathJax-Span-255"><span class="mrow" id="MathJax-Span-256"><span class="mo" id="MathJax-Span-257" style="font-family: MathJax_Main;">|</span></span></span><span class="mo" id="MathJax-Span-258" style="font-family: MathJax_Main; padding-left: 0.246em;">≤</span><span class="mn" id="MathJax-Span-259" style="font-family: MathJax_Main; padding-left: 0.246em;">1</span><span class="mo" id="MathJax-Span-260" style="font-family: MathJax_Main;">,</span></span></span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; clip: rect(2.891em, 1004.33em, 4.333em, -999.994em); top: -2.879em; left: 0em;"><span class="mtd" id="MathJax-Span-274"><span class="mrow" id="MathJax-Span-275"><span class="mtext" id="MathJax-Span-276" style="font-family: MathJax_Main;">otherwise.</span></span></span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span></span><span class="mo" id="MathJax-Span-277"></span></span></span></span><span style="display: inline-block; width: 0px; height: 4.934em;"></span></span></span><span style="display: inline-block; width: 0px; height: 4.934em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.29em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.934em; border-left: 0px solid; width: 0px; height: 2.128em;"></span></span></nobr><span class="MJX_Assistive_MathML MJX_Assistive_MathML_Block" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mtable columnalign="right left" rowspacing="3pt" columnspacing="0em" displaystyle="true"><mtr><mtd><mtext>where</mtext><mspace width="1em"></mspace><mrow class="MJX-TeXAtom-ORD"><mi class="MJX-tex-caligraphic" mathvariant="script">L</mi></mrow><mo stretchy="false">(</mo><mi>δ</mi><mo stretchy="false">)</mo><mo>=</mo><mrow><mo>{</mo><mtable columnalign="left left" rowspacing=".2em" columnspacing="1em" displaystyle="false"><mtr><mtd><mfrac><mn>1</mn><mn>2</mn></mfrac><mrow class="MJX-TeXAtom-ORD"><msup><mi>δ</mi><mn>2</mn></msup></mrow></mtd><mtd><mtext>for&nbsp;</mtext><mrow class="MJX-TeXAtom-ORD"><mo stretchy="false">|</mo></mrow><mi>δ</mi><mrow class="MJX-TeXAtom-ORD"><mo stretchy="false">|</mo></mrow><mo>≤</mo><mn>1</mn><mo>,</mo></mtd></mtr><mtr><mtd><mrow class="MJX-TeXAtom-ORD"><mo stretchy="false">|</mo></mrow><mi>δ</mi><mrow class="MJX-TeXAtom-ORD"><mo stretchy="false">|</mo></mrow><mo>−</mo><mfrac><mn>1</mn><mn>2</mn></mfrac></mtd><mtd><mtext>otherwise.</mtext></mtd></mtr></mtable><mo fence="true" stretchy="true" symmetric="true"></mo></mrow></mtd></mtr></mtable></math></span></span></div><script type="math/tex; mode=display" id="MathJax-Element-17">\begin{split}\text{where} \quad \mathcal{L}(\delta) = \begin{cases}
+  \frac{1}{2}{\delta^2}  & \text{for } |\delta| \le 1, \\
+  |\delta| - \frac{1}{2} & \text{otherwise.}
+\end{cases}\end{split}</script></div>
+<div class="section" id="q-network">
+<h3>Q-network<a class="anchorjs-link " href="https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html#q-network" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+<p>Our model will be a convolutional neural network that takes in the
+difference between the current and previous screen patches. It has two
+outputs, representing <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-18-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;Q&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;s&lt;/mi&gt;&lt;mo&gt;,&lt;/mo&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mi mathvariant=&quot;normal&quot;&gt;l&lt;/mi&gt;&lt;mi mathvariant=&quot;normal&quot;&gt;e&lt;/mi&gt;&lt;mi mathvariant=&quot;normal&quot;&gt;f&lt;/mi&gt;&lt;mi mathvariant=&quot;normal&quot;&gt;t&lt;/mi&gt;&lt;/mrow&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-278" style="width: 2.049em; display: inline-block;"><span style="display: inline-block; position: relative; width: 3.972em; height: 0px; font-size: 52%;"><span style="position: absolute; clip: rect(1.088em, 1003.85em, 2.77em, -999.994em); top: -2.157em; left: 0em;"><span class="mrow" id="MathJax-Span-279"><span class="mi" id="MathJax-Span-280" style="font-family: MathJax_Math-italic;">Q</span><span class="mo" id="MathJax-Span-281" style="font-family: MathJax_Main;">(</span><span class="mi" id="MathJax-Span-282" style="font-family: MathJax_Math-italic;">s</span><span class="mo" id="MathJax-Span-283" style="font-family: MathJax_Main;">,</span><span class="texatom" id="MathJax-Span-284" style="padding-left: 0.126em;"><span class="mrow" id="MathJax-Span-285"><span class="mi" id="MathJax-Span-286" style="font-family: MathJax_Main;">l</span><span class="mi" id="MathJax-Span-287" style="font-family: MathJax_Main;">e</span><span class="mi" id="MathJax-Span-288" style="font-family: MathJax_Main;">f<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.126em;"></span></span><span class="mi" id="MathJax-Span-289" style="font-family: MathJax_Main;">t</span></span></span><span class="mo" id="MathJax-Span-290" style="font-family: MathJax_Main;">)</span></span><span style="display: inline-block; width: 0px; height: 2.169em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.184em; border-left: 0px solid; width: 0px; height: 0.628em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>Q</mi><mo stretchy="false">(</mo><mi>s</mi><mo>,</mo><mrow class="MJX-TeXAtom-ORD"><mi mathvariant="normal">l</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">f</mi><mi mathvariant="normal">t</mi></mrow><mo stretchy="false">)</mo></math></span></span><script type="math/tex" id="MathJax-Element-18">Q(s, \mathrm{left})</script></span> and
+<span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-19-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;Q&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;s&lt;/mi&gt;&lt;mo&gt;,&lt;/mo&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mi mathvariant=&quot;normal&quot;&gt;r&lt;/mi&gt;&lt;mi mathvariant=&quot;normal&quot;&gt;i&lt;/mi&gt;&lt;mi mathvariant=&quot;normal&quot;&gt;g&lt;/mi&gt;&lt;mi mathvariant=&quot;normal&quot;&gt;h&lt;/mi&gt;&lt;mi mathvariant=&quot;normal&quot;&gt;t&lt;/mi&gt;&lt;/mrow&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-291" style="width: 2.29em; display: inline-block;"><span style="display: inline-block; position: relative; width: 4.453em; height: 0px; font-size: 52%;"><span style="position: absolute; clip: rect(1.088em, 1004.33em, 2.77em, -999.994em); top: -2.157em; left: 0em;"><span class="mrow" id="MathJax-Span-292"><span class="mi" id="MathJax-Span-293" style="font-family: MathJax_Math-italic;">Q</span><span class="mo" id="MathJax-Span-294" style="font-family: MathJax_Main;">(</span><span class="mi" id="MathJax-Span-295" style="font-family: MathJax_Math-italic;">s</span><span class="mo" id="MathJax-Span-296" style="font-family: MathJax_Main;">,</span><span class="texatom" id="MathJax-Span-297" style="padding-left: 0.126em;"><span class="mrow" id="MathJax-Span-298"><span class="mi" id="MathJax-Span-299" style="font-family: MathJax_Main;">r</span><span class="mi" id="MathJax-Span-300" style="font-family: MathJax_Main;">i</span><span class="mi" id="MathJax-Span-301" style="font-family: MathJax_Main;">g</span><span class="mi" id="MathJax-Span-302" style="font-family: MathJax_Main;">h</span><span class="mi" id="MathJax-Span-303" style="font-family: MathJax_Main;">t</span></span></span><span class="mo" id="MathJax-Span-304" style="font-family: MathJax_Main;">)</span></span><span style="display: inline-block; width: 0px; height: 2.169em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.184em; border-left: 0px solid; width: 0px; height: 0.628em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>Q</mi><mo stretchy="false">(</mo><mi>s</mi><mo>,</mo><mrow class="MJX-TeXAtom-ORD"><mi mathvariant="normal">r</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">g</mi><mi mathvariant="normal">h</mi><mi mathvariant="normal">t</mi></mrow><mo stretchy="false">)</mo></math></span></span><script type="math/tex" id="MathJax-Element-19">Q(s, \mathrm{right})</script></span> (where <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-20-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;s&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-305" style="width: 0.246em; display: inline-block;"><span style="display: inline-block; position: relative; width: 0.487em; height: 0px; font-size: 52%;"><span style="position: absolute; clip: rect(1.328em, 1000.49em, 2.53em, -999.994em); top: -2.157em; left: 0em;"><span class="mrow" id="MathJax-Span-306"><span class="mi" id="MathJax-Span-307" style="font-family: MathJax_Math-italic;">s</span></span><span style="display: inline-block; width: 0px; height: 2.169em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.059em; border-left: 0px solid; width: 0px; height: 0.378em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>s</mi></math></span></span><script type="math/tex" id="MathJax-Element-20">s</script></span> is the input to the
+network). In effect, the network is trying to predict the <em>quality</em> of
+taking each action given the current input.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">DQN</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DQN</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv3</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn3</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">head</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">448</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bn1</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bn2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bn3</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv3</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="input-extraction">
+<h3>Input extraction<a class="anchorjs-link " href="https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html#input-extraction" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+<p>The code below are utilities for extracting and processing rendered
+images from the environment. It uses the <code class="docutils literal notranslate"><span class="pre">torchvision</span></code> package, which
+makes it easy to compose image transforms. Once you run the cell it will
+display an example patch that it extracted.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">resize</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">Compose</span><span class="p">([</span><span class="n">T</span><span class="o">.</span><span class="n">ToPILImage</span><span class="p">(),</span>
+                    <span class="n">T</span><span class="o">.</span><span class="n">Resize</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="n">Image</span><span class="o">.</span><span class="n">CUBIC</span><span class="p">),</span>
+                    <span class="n">T</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">()])</span>
+
+<span class="c1"># This is based on the code from gym.</span>
+<span class="n">screen_width</span> <span class="o">=</span> <span class="mi">600</span>
+
+
+<span class="k">def</span> <span class="nf">get_cart_location</span><span class="p">():</span>
+    <span class="n">world_width</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">x_threshold</span> <span class="o">*</span> <span class="mi">2</span>
+    <span class="n">scale</span> <span class="o">=</span> <span class="n">screen_width</span> <span class="o">/</span> <span class="n">world_width</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">scale</span> <span class="o">+</span> <span class="n">screen_width</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span>  <span class="c1"># MIDDLE OF CART</span>
+
+
+<span class="k">def</span> <span class="nf">get_screen</span><span class="p">():</span>
+    <span class="n">screen</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">'rgb_array'</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span>
+        <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>  <span class="c1"># transpose into torch order (CHW)</span>
+    <span class="c1"># Strip off the top and bottom of the screen</span>
+    <span class="n">screen</span> <span class="o">=</span> <span class="n">screen</span><span class="p">[:,</span> <span class="mi">160</span><span class="p">:</span><span class="mi">320</span><span class="p">]</span>
+    <span class="n">view_width</span> <span class="o">=</span> <span class="mi">320</span>
+    <span class="n">cart_location</span> <span class="o">=</span> <span class="n">get_cart_location</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">cart_location</span> <span class="o">&lt;</span> <span class="n">view_width</span> <span class="o">//</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">slice_range</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">view_width</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">cart_location</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">screen_width</span> <span class="o">-</span> <span class="n">view_width</span> <span class="o">//</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="n">slice_range</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="o">-</span><span class="n">view_width</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">slice_range</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">cart_location</span> <span class="o">-</span> <span class="n">view_width</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span>
+                            <span class="n">cart_location</span> <span class="o">+</span> <span class="n">view_width</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="c1"># Strip off the edges, so that we have a square image centered on a cart</span>
+    <span class="n">screen</span> <span class="o">=</span> <span class="n">screen</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">slice_range</span><span class="p">]</span>
+    <span class="c1"># Convert to float, rescale, convert to torch tensor</span>
+    <span class="c1"># (this doesn't require a copy)</span>
+    <span class="n">screen</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">screen</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span>
+    <span class="n">screen</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">screen</span><span class="p">)</span>
+    <span class="c1"># Resize, and add a batch dimension (BCHW)</span>
+    <span class="k">return</span> <span class="n">resize</span><span class="p">(</span><span class="n">screen</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+
+<span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">get_screen</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span>
+           <span class="n">interpolation</span><span class="o">=</span><span class="s1">'none'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">'Example extracted screen'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="training">
+<h2>Training<a class="anchorjs-link " href="https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html#training" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<div class="section" id="hyperparameters-and-utilities">
+<h3>Hyperparameters and utilities<a class="anchorjs-link " href="https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html#hyperparameters-and-utilities" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+<p>This cell instantiates our model and its optimizer, and defines some
+utilities:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">select_action</span></code> - will select an action accordingly to an epsilon
+greedy policy. Simply put, we’ll sometimes use our model for choosing
+the action, and sometimes we’ll just sample one uniformly. The
+probability of choosing a random action will start at <code class="docutils literal notranslate"><span class="pre">EPS_START</span></code>
+and will decay exponentially towards <code class="docutils literal notranslate"><span class="pre">EPS_END</span></code>. <code class="docutils literal notranslate"><span class="pre">EPS_DECAY</span></code>
+controls the rate of the decay.</li>
+<li><code class="docutils literal notranslate"><span class="pre">plot_durations</span></code> - a helper for plotting the durations of episodes,
+along with an average over the last 100 episodes (the measure used in
+the official evaluations). The plot will be underneath the cell
+containing the main training loop, and will update after every
+episode.</li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">BATCH_SIZE</span> <span class="o">=</span> <span class="mi">128</span>
+<span class="n">GAMMA</span> <span class="o">=</span> <span class="mf">0.999</span>
+<span class="n">EPS_START</span> <span class="o">=</span> <span class="mf">0.9</span>
+<span class="n">EPS_END</span> <span class="o">=</span> <span class="mf">0.05</span>
+<span class="n">EPS_DECAY</span> <span class="o">=</span> <span class="mi">200</span>
+<span class="n">TARGET_UPDATE</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="n">policy_net</span> <span class="o">=</span> <span class="n">DQN</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+<span class="n">target_net</span> <span class="o">=</span> <span class="n">DQN</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+<span class="n">target_net</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">policy_net</span><span class="o">.</span><span class="n">state_dict</span><span class="p">())</span>
+<span class="n">target_net</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">RMSprop</span><span class="p">(</span><span class="n">policy_net</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+<span class="n">memory</span> <span class="o">=</span> <span class="n">ReplayMemory</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
+
+
+<span class="n">steps_done</span> <span class="o">=</span> <span class="mi">0</span>
+
+
+<span class="k">def</span> <span class="nf">select_action</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">steps_done</span>
+    <span class="n">sample</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
+    <span class="n">eps_threshold</span> <span class="o">=</span> <span class="n">EPS_END</span> <span class="o">+</span> <span class="p">(</span><span class="n">EPS_START</span> <span class="o">-</span> <span class="n">EPS_END</span><span class="p">)</span> <span class="o">*</span> \
+        <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">1.</span> <span class="o">*</span> <span class="n">steps_done</span> <span class="o">/</span> <span class="n">EPS_DECAY</span><span class="p">)</span>
+    <span class="n">steps_done</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">sample</span> <span class="o">&gt;</span> <span class="n">eps_threshold</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">policy_net</span><span class="p">(</span><span class="n">state</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="n">random</span><span class="o">.</span><span class="n">randrange</span><span class="p">(</span><span class="mi">2</span><span class="p">)]],</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span>
+
+
+<span class="n">episode_durations</span> <span class="o">=</span> <span class="p">[]</span>
+
+
+<span class="k">def</span> <span class="nf">plot_durations</span><span class="p">():</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+    <span class="n">durations_t</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">episode_durations</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">'Training...'</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">'Episode'</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">'Duration'</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">durations_t</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
+    <span class="c1"># Take 100 episode averages and plot them too</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">durations_t</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">100</span><span class="p">:</span>
+        <span class="n">means</span> <span class="o">=</span> <span class="n">durations_t</span><span class="o">.</span><span class="n">unfold</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">means</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">99</span><span class="p">),</span> <span class="n">means</span><span class="p">))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">means</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">pause</span><span class="p">(</span><span class="mf">0.001</span><span class="p">)</span>  <span class="c1"># pause a bit so that plots are updated</span>
+    <span class="k">if</span> <span class="n">is_ipython</span><span class="p">:</span>
+        <span class="n">display</span><span class="o">.</span><span class="n">clear_output</span><span class="p">(</span><span class="n">wait</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">display</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="training-loop">
+<h3>Training loop<a class="anchorjs-link " href="https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html#training-loop" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+<p>Finally, the code for training our model.</p>
+<p>Here, you can find an <code class="docutils literal notranslate"><span class="pre">optimize_model</span></code> function that performs a
+single step of the optimization. It first samples a batch, concatenates
+all the tensors into a single one, computes <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-21-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;Q&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;s&lt;/mi&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;/msub&gt;&lt;mo&gt;,&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;a&lt;/mi&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;/msub&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-308" style="width: 1.929em; display: inline-block;"><span style="display: inline-block; position: relative; width: 3.732em; height: 0px; font-size: 52%;"><span style="position: absolute; clip: rect(1.088em, 1003.61em, 2.77em, -999.994em); top: -2.157em; left: 0em;"><span class="mrow" id="MathJax-Span-309"><span class="mi" id="MathJax-Span-310" style="font-family: MathJax_Math-italic;">Q</span><span class="mo" id="MathJax-Span-311" style="font-family: MathJax_Main;">(</span><span class="msubsup" id="MathJax-Span-312"><span style="display: inline-block; position: relative; width: 0.847em; height: 0px;"><span style="position: absolute; clip: rect(3.131em, 1000.37em, 4.333em, -999.994em); top: -3.96em; left: 0em;"><span class="mi" id="MathJax-Span-313" style="font-family: MathJax_Math-italic;">s</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; top: -3.72em; left: 0.487em;"><span class="mi" id="MathJax-Span-314" style="font-size: 96.2%; font-family: MathJax_Math-italic;">t</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span></span><span class="mo" id="MathJax-Span-315" style="font-family: MathJax_Main;">,</span><span class="msubsup" id="MathJax-Span-316" style="padding-left: 0.126em;"><span style="display: inline-block; position: relative; width: 0.968em; height: 0px;"><span style="position: absolute; clip: rect(3.131em, 1000.49em, 4.333em, -999.994em); top: -3.96em; left: 0em;"><span class="mi" id="MathJax-Span-317" style="font-family: MathJax_Math-italic;">a</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; top: -3.72em; left: 0.487em;"><span class="mi" id="MathJax-Span-318" style="font-size: 96.2%; font-family: MathJax_Math-italic;">t</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span></span><span class="mo" id="MathJax-Span-319" style="font-family: MathJax_Main;">)</span></span><span style="display: inline-block; width: 0px; height: 2.169em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.184em; border-left: 0px solid; width: 0px; height: 0.628em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>Q</mi><mo stretchy="false">(</mo><msub><mi>s</mi><mi>t</mi></msub><mo>,</mo><msub><mi>a</mi><mi>t</mi></msub><mo stretchy="false">)</mo></math></span></span><script type="math/tex" id="MathJax-Element-21">Q(s_t, a_t)</script></span> and
+<span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-22-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;V&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;s&lt;/mi&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mo&gt;+&lt;/mo&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;/mrow&gt;&lt;/msub&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;munder&gt;&lt;mo movablelimits=&quot;true&quot; form=&quot;prefix&quot;&gt;max&lt;/mo&gt;&lt;mi&gt;a&lt;/mi&gt;&lt;/munder&gt;&lt;mi&gt;Q&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;s&lt;/mi&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mo&gt;+&lt;/mo&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;/mrow&gt;&lt;/msub&gt;&lt;mo&gt;,&lt;/mo&gt;&lt;mi&gt;a&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-320" style="width: 6.376em; display: inline-block;"><span style="display: inline-block; position: relative; width: 12.145em; height: 0px; font-size: 52%;"><span style="position: absolute; clip: rect(1.088em, 1012.02em, 2.891em, -999.994em); top: -2.157em; left: 0em;"><span class="mrow" id="MathJax-Span-321"><span class="mi" id="MathJax-Span-322" style="font-family: MathJax_Math-italic;">V<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.246em;"></span></span><span class="mo" id="MathJax-Span-323" style="font-family: MathJax_Main;">(</span><span class="msubsup" id="MathJax-Span-324"><span style="display: inline-block; position: relative; width: 2.169em; height: 0px;"><span style="position: absolute; clip: rect(3.131em, 1000.37em, 4.333em, -999.994em); top: -3.96em; left: 0em;"><span class="mi" id="MathJax-Span-325" style="font-family: MathJax_Math-italic;">s</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; top: -3.72em; left: 0.487em;"><span class="texatom" id="MathJax-Span-326"><span class="mrow" id="MathJax-Span-327"><span class="mi" id="MathJax-Span-328" style="font-size: 96.2%; font-family: MathJax_Math-italic;">t</span><span class="mo" id="MathJax-Span-329" style="font-size: 96.2%; font-family: MathJax_Main;">+</span><span class="mn" id="MathJax-Span-330" style="font-size: 96.2%; font-family: MathJax_Main;">1</span></span></span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span></span><span class="mo" id="MathJax-Span-331" style="font-family: MathJax_Main;">)</span><span class="mo" id="MathJax-Span-332" style="font-family: MathJax_Main; padding-left: 0.246em;">=</span><span class="munderover" id="MathJax-Span-333" style="padding-left: 0.246em;"><span style="display: inline-block; position: relative; width: 2.41em; height: 0px;"><span style="position: absolute; clip: rect(3.131em, 1001.81em, 4.333em, -999.994em); top: -3.96em; left: 0em;"><span class="mo" id="MathJax-Span-334" style="font-family: MathJax_Main;">max</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; top: -3.84em; left: 1.809em;"><span class="mi" id="MathJax-Span-335" style="font-size: 96.2%; font-family: MathJax_Math-italic;">a</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span></span><span class="mi" id="MathJax-Span-336" style="font-family: MathJax_Math-italic; padding-left: 0.126em;">Q</span><span class="mo" id="MathJax-Span-337" style="font-family: MathJax_Main;">(</span><span class="msubsup" id="MathJax-Span-338"><span style="display: inline-block; position: relative; width: 2.169em; height: 0px;"><span style="position: absolute; clip: rect(3.131em, 1000.37em, 4.333em, -999.994em); top: -3.96em; left: 0em;"><span class="mi" id="MathJax-Span-339" style="font-family: MathJax_Math-italic;">s</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; top: -3.72em; left: 0.487em;"><span class="texatom" id="MathJax-Span-340"><span class="mrow" id="MathJax-Span-341"><span class="mi" id="MathJax-Span-342" style="font-size: 96.2%; font-family: MathJax_Math-italic;">t</span><span class="mo" id="MathJax-Span-343" style="font-size: 96.2%; font-family: MathJax_Main;">+</span><span class="mn" id="MathJax-Span-344" style="font-size: 96.2%; font-family: MathJax_Main;">1</span></span></span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span></span><span class="mo" id="MathJax-Span-345" style="font-family: MathJax_Main;">,</span><span class="mi" id="MathJax-Span-346" style="font-family: MathJax_Math-italic; padding-left: 0.126em;">a</span><span class="mo" id="MathJax-Span-347" style="font-family: MathJax_Main;">)</span></span><span style="display: inline-block; width: 0px; height: 2.169em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.247em; border-left: 0px solid; width: 0px; height: 0.691em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>V</mi><mo stretchy="false">(</mo><msub><mi>s</mi><mrow class="MJX-TeXAtom-ORD"><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub><mo stretchy="false">)</mo><mo>=</mo><munder><mo movablelimits="true" form="prefix">max</mo><mi>a</mi></munder><mi>Q</mi><mo stretchy="false">(</mo><msub><mi>s</mi><mrow class="MJX-TeXAtom-ORD"><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>,</mo><mi>a</mi><mo stretchy="false">)</mo></math></span></span><script type="math/tex" id="MathJax-Element-22">V(s_{t+1}) = \max_a Q(s_{t+1}, a)</script></span>, and combines them into our
+loss. By defition we set <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-23-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;V&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;s&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;mn&gt;0&lt;/mn&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-348" style="width: 2.049em; display: inline-block;"><span style="display: inline-block; position: relative; width: 3.852em; height: 0px; font-size: 52%;"><span style="position: absolute; clip: rect(1.088em, 1003.85em, 2.77em, -999.994em); top: -2.157em; left: 0em;"><span class="mrow" id="MathJax-Span-349"><span class="mi" id="MathJax-Span-350" style="font-family: MathJax_Math-italic;">V<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.246em;"></span></span><span class="mo" id="MathJax-Span-351" style="font-family: MathJax_Main;">(</span><span class="mi" id="MathJax-Span-352" style="font-family: MathJax_Math-italic;">s</span><span class="mo" id="MathJax-Span-353" style="font-family: MathJax_Main;">)</span><span class="mo" id="MathJax-Span-354" style="font-family: MathJax_Main; padding-left: 0.246em;">=</span><span class="mn" id="MathJax-Span-355" style="font-family: MathJax_Main; padding-left: 0.246em;">0</span></span><span style="display: inline-block; width: 0px; height: 2.169em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.184em; border-left: 0px solid; width: 0px; height: 0.628em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>V</mi><mo stretchy="false">(</mo><mi>s</mi><mo stretchy="false">)</mo><mo>=</mo><mn>0</mn></math></span></span><script type="math/tex" id="MathJax-Element-23">V(s) = 0</script></span> if <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-24-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;s&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-356" style="width: 0.246em; display: inline-block;"><span style="display: inline-block; position: relative; width: 0.487em; height: 0px; font-size: 52%;"><span style="position: absolute; clip: rect(1.328em, 1000.49em, 2.53em, -999.994em); top: -2.157em; left: 0em;"><span class="mrow" id="MathJax-Span-357"><span class="mi" id="MathJax-Span-358" style="font-family: MathJax_Math-italic;">s</span></span><span style="display: inline-block; width: 0px; height: 2.169em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.059em; border-left: 0px solid; width: 0px; height: 0.378em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>s</mi></math></span></span><script type="math/tex" id="MathJax-Element-24">s</script></span> is a terminal
+state. We also use a target network to compute <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-25-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;V&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;s&lt;/mi&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mo&gt;+&lt;/mo&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;/mrow&gt;&lt;/msub&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-359" style="width: 1.929em; display: inline-block;"><span style="display: inline-block; position: relative; width: 3.732em; height: 0px; font-size: 52%;"><span style="position: absolute; clip: rect(1.088em, 1003.61em, 2.891em, -999.994em); top: -2.157em; left: 0em;"><span class="mrow" id="MathJax-Span-360"><span class="mi" id="MathJax-Span-361" style="font-family: MathJax_Math-italic;">V<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.246em;"></span></span><span class="mo" id="MathJax-Span-362" style="font-family: MathJax_Main;">(</span><span class="msubsup" id="MathJax-Span-363"><span style="display: inline-block; position: relative; width: 2.169em; height: 0px;"><span style="position: absolute; clip: rect(3.131em, 1000.37em, 4.333em, -999.994em); top: -3.96em; left: 0em;"><span class="mi" id="MathJax-Span-364" style="font-family: MathJax_Math-italic;">s</span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span><span style="position: absolute; top: -3.72em; left: 0.487em;"><span class="texatom" id="MathJax-Span-365"><span class="mrow" id="MathJax-Span-366"><span class="mi" id="MathJax-Span-367" style="font-size: 96.2%; font-family: MathJax_Math-italic;">t</span><span class="mo" id="MathJax-Span-368" style="font-size: 96.2%; font-family: MathJax_Main;">+</span><span class="mn" id="MathJax-Span-369" style="font-size: 96.2%; font-family: MathJax_Main;">1</span></span></span><span style="display: inline-block; width: 0px; height: 3.972em;"></span></span></span></span><span class="mo" id="MathJax-Span-370" style="font-family: MathJax_Main;">)</span></span><span style="display: inline-block; width: 0px; height: 2.169em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.247em; border-left: 0px solid; width: 0px; height: 0.691em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>V</mi><mo stretchy="false">(</mo><msub><mi>s</mi><mrow class="MJX-TeXAtom-ORD"><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub><mo stretchy="false">)</mo></math></span></span><script type="math/tex" id="MathJax-Element-25">V(s_{t+1})</script></span> for
+added stability. The target network has its weights kept frozen most of
+the time, but is updated with the policy network’s weights every so often.
+This is usually a set number of steps but we shall use episodes for
+simplicity.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">optimize_model</span><span class="p">():</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">memory</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">BATCH_SIZE</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="n">transitions</span> <span class="o">=</span> <span class="n">memory</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">BATCH_SIZE</span><span class="p">)</span>
+    <span class="c1"># Transpose the batch (see http://stackoverflow.com/a/19343/3343043 for</span>
+    <span class="c1"># detailed explanation).</span>
+    <span class="n">batch</span> <span class="o">=</span> <span class="n">Transition</span><span class="p">(</span><span class="o">*</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">transitions</span><span class="p">))</span>
+
+    <span class="c1"># Compute a mask of non-final states and concatenate the batch elements</span>
+    <span class="n">non_final_mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">,</span>
+                                          <span class="n">batch</span><span class="o">.</span><span class="n">next_state</span><span class="p">)),</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+    <span class="n">non_final_next_states</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">batch</span><span class="o">.</span><span class="n">next_state</span>
+                                                <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">])</span>
+    <span class="n">state_batch</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
+    <span class="n">action_batch</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">action</span><span class="p">)</span>
+    <span class="n">reward_batch</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">reward</span><span class="p">)</span>
+
+    <span class="c1"># Compute Q(s_t, a) - the model computes Q(s_t), then we select the</span>
+    <span class="c1"># columns of actions taken</span>
+    <span class="n">state_action_values</span> <span class="o">=</span> <span class="n">policy_net</span><span class="p">(</span><span class="n">state_batch</span><span class="p">)</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">action_batch</span><span class="p">)</span>
+
+    <span class="c1"># Compute V(s_{t+1}) for all next states.</span>
+    <span class="n">next_state_values</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">BATCH_SIZE</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">next_state_values</span><span class="p">[</span><span class="n">non_final_mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">target_net</span><span class="p">(</span><span class="n">non_final_next_states</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+    <span class="c1"># Compute the expected Q values</span>
+    <span class="n">expected_state_action_values</span> <span class="o">=</span> <span class="p">(</span><span class="n">next_state_values</span> <span class="o">*</span> <span class="n">GAMMA</span><span class="p">)</span> <span class="o">+</span> <span class="n">reward_batch</span>
+
+    <span class="c1"># Compute Huber loss</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">smooth_l1_loss</span><span class="p">(</span><span class="n">state_action_values</span><span class="p">,</span> <span class="n">expected_state_action_values</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+
+    <span class="c1"># Optimize the model</span>
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">policy_net</span><span class="o">.</span><span class="n">parameters</span><span class="p">():</span>
+        <span class="n">param</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">clamp_</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Below, you can find the main training loop. At the beginning we reset
+the environment and initialize the <code class="docutils literal notranslate"><span class="pre">state</span></code> Tensor. Then, we sample
+an action, execute it, observe the next screen and the reward (always
+1), and optimize our model once. When the episode ends (our model
+fails), we restart the loop.</p>
+<p>Below, <cite>num_episodes</cite> is set small. You should download
+the notebook and run lot more epsiodes.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">num_episodes</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="k">for</span> <span class="n">i_episode</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_episodes</span><span class="p">):</span>
+    <span class="c1"># Initialize the environment and state</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+    <span class="n">last_screen</span> <span class="o">=</span> <span class="n">get_screen</span><span class="p">()</span>
+    <span class="n">current_screen</span> <span class="o">=</span> <span class="n">get_screen</span><span class="p">()</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="n">current_screen</span> <span class="o">-</span> <span class="n">last_screen</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">count</span><span class="p">():</span>
+        <span class="c1"># Select and perform an action</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">select_action</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+        <span class="n">reward</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">reward</span><span class="p">],</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="c1"># Observe new state</span>
+        <span class="n">last_screen</span> <span class="o">=</span> <span class="n">current_screen</span>
+        <span class="n">current_screen</span> <span class="o">=</span> <span class="n">get_screen</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
+            <span class="n">next_state</span> <span class="o">=</span> <span class="n">current_screen</span> <span class="o">-</span> <span class="n">last_screen</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">next_state</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c1"># Store the transition in memory</span>
+        <span class="n">memory</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">next_state</span><span class="p">,</span> <span class="n">reward</span><span class="p">)</span>
+
+        <span class="c1"># Move to the next state</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">next_state</span>
+
+        <span class="c1"># Perform one step of the optimization (on the target network)</span>
+        <span class="n">optimize_model</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">done</span><span class="p">:</span>
+            <span class="n">episode_durations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">plot_durations</span><span class="p">()</span>
+            <span class="k">break</span>
+    <span class="c1"># Update the target network</span>
+    <span class="k">if</span> <span class="n">i_episode</span> <span class="o">%</span> <span class="n">TARGET_UPDATE</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">target_net</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">policy_net</span><span class="o">.</span><span class="n">state_dict</span><span class="p">())</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s1">'Complete'</span><span class="p">)</span>
+<span class="n">env</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+<span class="n">env</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ioff</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-intermediate-reinforcement-q-learning-py">
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal has-code" download="" href="https://pytorch.org/tutorials/_downloads/b8954cc7b372cac10a92b8c6183846a3/reinforcement_q_learning.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">reinforcement_q_learning.py</span></code></a></div>
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal has-code" download="" href="https://pytorch.org/tutorials/_downloads/2b3f06b04b5e96e4772746c20fcb4dcc/reinforcement_q_learning.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">reinforcement_q_learning.ipynb</span></code></a></div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.readthedocs.io/">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+</div>
+</div>
+</article>
+</div>
+<footer>
+<div aria-label="footer navigation" class="rst-footer-buttons" role="navigation">
+<a accesskey="n" class="btn btn-neutral float-right" href="https://pytorch.org/tutorials/advanced/numpy_extensions_tutorial.html" rel="next" title="Creating Extensions Using numpy and scipy">Next <img class="next-page" src="./Reinforcement Learning (DQN) Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/chevron-right-orange.svg"></a>
+<a accesskey="p" class="btn btn-neutral" href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html" rel="prev" title="DCGAN Tutorial"><img class="previous-page" src="./Reinforcement Learning (DQN) Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/chevron-right-orange.svg"> Previous</a>
+</div>
+<hr>
+<div role="contentinfo">
+<p>
+        © Copyright 2017, PyTorch.
+
+    </p>
+</div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org/">Read the Docs</a>. 
+
+</footer>
+</div>
+</div>
+<div class="pytorch-content-right" id="pytorch-content-right" style="height: 100%;">
+<div class="pytorch-right-menu" id="pytorch-right-menu" style="top: 0px;">
+<div class="pytorch-side-scroll" id="pytorch-side-scroll-right" style="height: 677px;">
+<ul>
+<li><a class="reference internal title-link has-children" href="https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html#">Reinforcement Learning (DQN) Tutorial</a><ul>
+<li><a class="reference internal" href="https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html#replay-memory">Replay Memory</a></li>
+<li><a class="reference internal not-expanded" href="https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html#dqn-algorithm">DQN algorithm</a><ul>
+<li><a class="reference internal" href="https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html#q-network">Q-network</a></li>
+<li><a class="reference internal" href="https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html#input-extraction">Input extraction</a></li>
+</ul>
+</li>
+<li><a class="reference internal not-expanded" href="https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html#training">Training</a><ul>
+<li><a class="reference internal" href="https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html#hyperparameters-and-utilities">Hyperparameters and utilities</a></li>
+<li><a class="reference internal" href="https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html#training-loop">Training loop</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+</div>
+<script data-url_root="../" id="documentation_options" src="./Reinforcement Learning (DQN) Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/documentation_options.js.下载" type="text/javascript"></script>
+<script src="./Reinforcement Learning (DQN) Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/jquery.js.下载" type="text/javascript"></script>
+<script src="./Reinforcement Learning (DQN) Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/underscore.js.下载" type="text/javascript"></script>
+<script src="./Reinforcement Learning (DQN) Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/doctools.js.下载" type="text/javascript"></script>
+<script async="async" src="./Reinforcement Learning (DQN) Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/MathJax.js.下载" type="text/javascript"></script>
+<script src="./Reinforcement Learning (DQN) Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/popper.min.js.下载" type="text/javascript"></script>
+<script src="./Reinforcement Learning (DQN) Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/bootstrap.min.js.下载" type="text/javascript"></script>
+<script src="./Reinforcement Learning (DQN) Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/theme.js.下载" type="text/javascript"></script>
+<script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-90545585-2', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<img alt="" height="1" src="./Reinforcement Learning (DQN) Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/saved_resource" style="border-style:none;" width="1">
+<!-- Begin Footer -->
+<div class="container-fluid docs-tutorials-resources" id="docs-tutorials-resources">
+<div class="container">
+<div class="row">
+<div class="col-md-4 text-center">
+<h2>Docs</h2>
+<p>Access comprehensive developer documentation for PyTorch</p>
+<a class="with-right-arrow" href="https://pytorch.org/docs/stable/index.html">View Docs</a>
+</div>
+<div class="col-md-4 text-center">
+<h2>Tutorials</h2>
+<p>Get in-depth tutorials for beginners and advanced developers</p>
+<a class="with-right-arrow" href="https://pytorch.org/tutorials">View Tutorials</a>
+</div>
+<div class="col-md-4 text-center">
+<h2>Resources</h2>
+<p>Find development resources and get your questions answered</p>
+<a class="with-right-arrow" href="https://pytorch.org/resources">View Resources</a>
+</div>
+</div>
+</div>
+</div>
+<footer class="site-footer">
+<div class="container footer-container">
+<div class="footer-logo-wrapper">
+<a class="footer-logo" href="https://pytorch.org/"></a>
+</div>
+<div class="footer-links-wrapper">
+<div class="footer-links-col">
+<ul>
+<li class="list-title"><a href="https://pytorch.org/">PyTorch</a></li>
+<li><a href="https://pytorch.org/get-started">Get Started</a></li>
+<li><a href="https://pytorch.org/features">Features</a></li>
+<li><a href="https://pytorch.org/ecosystem">Ecosystem</a></li>
+<li><a href="https://pytorch.org/blog/">Blog</a></li>
+<li><a href="https://pytorch.org/resources">Resources</a></li>
+</ul>
+</div>
+<div class="footer-links-col">
+<ul>
+<li class="list-title"><a href="https://pytorch.org/support">Support</a></li>
+<li><a href="https://pytorch.org/tutorials">Tutorials</a></li>
+<li><a href="https://pytorch.org/docs/stable/index.html">Docs</a></li>
+<li><a href="https://discuss.pytorch.org/" target="_blank">Discuss</a></li>
+<li><a href="https://github.com/pytorch/pytorch/issues" target="_blank">Github Issues</a></li>
+<li><a href="https://pytorch.slack.com/" target="_blank">Slack</a></li>
+<li><a href="https://github.com/pytorch/pytorch/blob/master/CONTRIBUTING.md" target="_blank">Contributing</a></li>
+</ul>
+</div>
+<div class="footer-links-col follow-us-col">
+<ul>
+<li class="list-title">Follow Us</li>
+<li>
+<div id="mc_embed_signup">
+<form action="https://twitter.us14.list-manage.com/subscribe/post?u=75419c71fe0a935e53dfa4a3f&amp;id=91d0dccd39" class="email-subscribe-form validate" id="mc-embedded-subscribe-form" method="post" name="mc-embedded-subscribe-form" novalidate="" target="_blank">
+<div class="email-subscribe-form-fields-wrapper" id="mc_embed_signup_scroll">
+<div class="mc-field-group">
+<label for="mce-EMAIL" style="display:none;">Email Address</label>
+<input class="required email" id="mce-EMAIL" name="EMAIL" placeholder="Email Address" type="email" value="">
+</div>
+<div class="clear" id="mce-responses">
+<div class="response" id="mce-error-response" style="display:none"></div>
+<div class="response" id="mce-success-response" style="display:none"></div>
+</div> <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+<div aria-hidden="true" style="position: absolute; left: -5000px;"><input name="b_75419c71fe0a935e53dfa4a3f_91d0dccd39" tabindex="-1" type="text" value=""></div>
+<div class="clear">
+<input class="button email-subscribe-button" id="mc-embedded-subscribe" name="subscribe" type="submit" value="">
+</div>
+</div>
+</form>
+</div>
+</li>
+</ul>
+<div class="footer-social-icons">
+<a class="facebook" href="https://www.facebook.com/pytorch" target="_blank"></a>
+<a class="twitter" href="https://twitter.com/pytorch" target="_blank"></a>
+</div>
+</div>
+</div>
+</div>
+</footer>
+<!-- End Footer -->
+<!-- Begin Mobile Menu -->
+<div class="mobile-main-menu">
+<div class="container-fluid">
+<div class="container">
+<div class="mobile-main-menu-header-container">
+<a aria-label="PyTorch" class="header-logo" href="https://pytorch.org/"></a>
+<a class="main-menu-close-button" data-behavior="close-mobile-menu" href="https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html#"></a>
+</div>
+</div>
+</div>
+<div class="mobile-main-menu-links-container">
+<div class="main-menu">
+<ul>
+<li>
+<a href="https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html#">Get Started</a>
+</li>
+<li>
+<a href="https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html#">Features</a>
+</li>
+<li>
+<a href="https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html#">Ecosystem</a>
+</li>
+<li>
+<a href="https://pytorch.org/blog/">Blog</a>
+</li>
+<li class="active">
+<a href="https://pytorch.org/tutorials">Tutorials</a>
+</li>
+<li>
+<a href="https://pytorch.org/docs/stable/index.html">Docs</a>
+</li>
+<li>
+<a href="https://pytorch.org/resources">Resources</a>
+</li>
+<li>
+<a href="https://github.com/pytorch/pytorch">Github</a>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<!-- End Mobile Menu -->
+<script src="./Reinforcement Learning (DQN) Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/anchor.min.js.下载" type="text/javascript"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      pytorchAnchors.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
+  </script>
+
+<div style="position: absolute; width: 0px; height: 0px; overflow: hidden; padding: 0px; border: 0px; margin: 0px;"><div id="MathJax_Font_Test" style="position: absolute; visibility: hidden; top: 0px; left: 0px; width: auto; padding: 0px; border: 0px; margin: 0px; white-space: nowrap; text-align: left; text-indent: 0px; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; font-size: 40px; font-weight: normal; font-style: normal; font-family: MathJax_Size4, sans-serif;"></div></div></body></html>

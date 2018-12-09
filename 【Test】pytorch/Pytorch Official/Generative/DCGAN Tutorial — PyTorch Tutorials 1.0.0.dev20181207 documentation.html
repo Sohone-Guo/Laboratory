@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<!-- saved from url=(0064)https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html -->
+<html class="js flexbox canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers applicationcache svg inlinesvg smil svgclippaths gr__pytorch_org" lang="en" style=""><!--<![endif]--><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>DCGAN Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation</title>
+<style class="anchorjs"></style><link href="./DCGAN Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/theme.css" rel="stylesheet" type="text/css">
+<!-- <link rel="stylesheet" href="../_static/pygments.css" type="text/css" /> -->
+<link href="./DCGAN Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/gallery.css" rel="stylesheet" type="text/css">
+<link href="https://pytorch.org/tutorials/genindex.html" rel="index" title="Index">
+<link href="https://pytorch.org/tutorials/search.html" rel="search" title="Search">
+<link href="https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html" rel="next" title="Reinforcement Learning (DQN) Tutorial">
+<link href="https://pytorch.org/tutorials/intermediate/seq2seq_translation_tutorial.html" rel="prev" title="Translation with a Sequence to Sequence Network and Attention">
+<script async="" src="./DCGAN Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/analytics.js.下载"></script><script src="./DCGAN Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/modernizr.min.js.下载"></script>
+<style type="text/css">.MathJax_Hover_Frame {border-radius: .25em; -webkit-border-radius: .25em; -moz-border-radius: .25em; -khtml-border-radius: .25em; box-shadow: 0px 0px 15px #83A; -webkit-box-shadow: 0px 0px 15px #83A; -moz-box-shadow: 0px 0px 15px #83A; -khtml-box-shadow: 0px 0px 15px #83A; border: 1px solid #A6D ! important; display: inline-block; position: absolute}
+.MathJax_Menu_Button .MathJax_Hover_Arrow {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; -khtml-border-radius: 4px; font-family: 'Courier New',Courier; font-size: 9px; color: #F0F0F0}
+.MathJax_Menu_Button .MathJax_Hover_Arrow span {display: block; background-color: #AAA; border: 1px solid; border-radius: 3px; line-height: 0; padding: 4px}
+.MathJax_Hover_Arrow:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_Hover_Arrow:hover span {background-color: #CCC!important}
+</style><style type="text/css">#MathJax_About {position: fixed; left: 50%; width: auto; text-align: center; border: 3px outset; padding: 1em 2em; background-color: #DDDDDD; color: black; cursor: default; font-family: message-box; font-size: 120%; font-style: normal; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 15px; -webkit-border-radius: 15px; -moz-border-radius: 15px; -khtml-border-radius: 15px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_About.MathJax_MousePost {outline: none}
+.MathJax_Menu {position: absolute; background-color: white; color: black; width: auto; padding: 2px; border: 1px solid #CCCCCC; margin: 0; cursor: default; font: menu; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+.MathJax_MenuItem {padding: 2px 2em; background: transparent}
+.MathJax_MenuArrow {position: absolute; right: .5em; padding-top: .25em; color: #666666; font-size: .75em}
+.MathJax_MenuActive .MathJax_MenuArrow {color: white}
+.MathJax_MenuArrow.RTL {left: .5em; right: auto}
+.MathJax_MenuCheck {position: absolute; left: .7em}
+.MathJax_MenuCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuRadioCheck {position: absolute; left: 1em}
+.MathJax_MenuRadioCheck.RTL {right: 1em; left: auto}
+.MathJax_MenuLabel {padding: 2px 2em 4px 1.33em; font-style: italic}
+.MathJax_MenuRule {border-top: 1px solid #CCCCCC; margin: 4px 1px 0px}
+.MathJax_MenuDisabled {color: GrayText}
+.MathJax_MenuActive {background-color: Highlight; color: HighlightText}
+.MathJax_MenuDisabled:focus, .MathJax_MenuLabel:focus {background-color: #E8E8E8}
+.MathJax_ContextMenu:focus {outline: none}
+.MathJax_ContextMenu .MathJax_MenuItem:focus {outline: none}
+#MathJax_AboutClose {top: .2em; right: .2em}
+.MathJax_Menu .MathJax_MenuClose {top: -10px; left: -10px}
+.MathJax_MenuClose {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; font-family: 'Courier New',Courier; font-size: 24px; color: #F0F0F0}
+.MathJax_MenuClose span {display: block; background-color: #AAA; border: 1.5px solid; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; line-height: 0; padding: 8px 0 6px}
+.MathJax_MenuClose:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_MenuClose:hover span {background-color: #CCC!important}
+.MathJax_MenuClose:hover:focus {outline: none}
+</style><style type="text/css">.MathJax_Preview .MJXf-math {color: inherit!important}
+</style><style type="text/css">.MJX_Assistive_MathML {position: absolute!important; top: 0; left: 0; clip: rect(1px, 1px, 1px, 1px); padding: 1px 0 0 0!important; border: 0!important; height: 1px!important; width: 1px!important; overflow: hidden!important; display: block!important; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none}
+.MJX_Assistive_MathML.MJX_Assistive_MathML_Block {width: 100%!important}
+</style><style type="text/css">#MathJax_Zoom {position: absolute; background-color: #F0F0F0; overflow: auto; display: block; z-index: 301; padding: .5em; border: 1px solid black; margin: 0; font-weight: normal; font-style: normal; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; -webkit-box-sizing: content-box; -moz-box-sizing: content-box; box-sizing: content-box; box-shadow: 5px 5px 15px #AAAAAA; -webkit-box-shadow: 5px 5px 15px #AAAAAA; -moz-box-shadow: 5px 5px 15px #AAAAAA; -khtml-box-shadow: 5px 5px 15px #AAAAAA; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_ZoomOverlay {position: absolute; left: 0; top: 0; z-index: 300; display: inline-block; width: 100%; height: 100%; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+#MathJax_ZoomFrame {position: relative; display: inline-block; height: 0; width: 0}
+#MathJax_ZoomEventTrap {position: absolute; left: 0; top: 0; z-index: 302; display: inline-block; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+</style><style type="text/css">.MathJax_Preview {color: #888}
+#MathJax_Message {position: fixed; left: 1em; bottom: 1.5em; background-color: #E6E6E6; border: 1px solid #959595; margin: 0px; padding: 2px 8px; z-index: 102; color: black; font-size: 80%; width: auto; white-space: nowrap}
+#MathJax_MSIE_Frame {position: absolute; top: 0; left: 0; width: 0px; z-index: 101; border: 0px; margin: 0px; padding: 0px}
+.MathJax_Error {color: #CC0000; font-style: italic}
+</style><style type="text/css">.MJXp-script {font-size: .8em}
+.MJXp-right {-webkit-transform-origin: right; -moz-transform-origin: right; -ms-transform-origin: right; -o-transform-origin: right; transform-origin: right}
+.MJXp-bold {font-weight: bold}
+.MJXp-italic {font-style: italic}
+.MJXp-scr {font-family: MathJax_Script,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-frak {font-family: MathJax_Fraktur,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-sf {font-family: MathJax_SansSerif,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-cal {font-family: MathJax_Caligraphic,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-mono {font-family: MathJax_Typewriter,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-largeop {font-size: 150%}
+.MJXp-largeop.MJXp-int {vertical-align: -.2em}
+.MJXp-math {display: inline-block; line-height: 1.2; text-indent: 0; font-family: 'Times New Roman',Times,STIXGeneral,serif; white-space: nowrap; border-collapse: collapse}
+.MJXp-display {display: block; text-align: center; margin: 1em 0}
+.MJXp-math span {display: inline-block}
+.MJXp-box {display: block!important; text-align: center}
+.MJXp-box:after {content: " "}
+.MJXp-rule {display: block!important; margin-top: .1em}
+.MJXp-char {display: block!important}
+.MJXp-mo {margin: 0 .15em}
+.MJXp-mfrac {margin: 0 .125em; vertical-align: .25em}
+.MJXp-denom {display: inline-table!important; width: 100%}
+.MJXp-denom > * {display: table-row!important}
+.MJXp-surd {vertical-align: top}
+.MJXp-surd > * {display: block!important}
+.MJXp-script-box > *  {display: table!important; height: 50%}
+.MJXp-script-box > * > * {display: table-cell!important; vertical-align: top}
+.MJXp-script-box > *:last-child > * {vertical-align: bottom}
+.MJXp-script-box > * > * > * {display: block!important}
+.MJXp-mphantom {visibility: hidden}
+.MJXp-munderover {display: inline-table!important}
+.MJXp-over {display: inline-block!important; text-align: center}
+.MJXp-over > * {display: block!important}
+.MJXp-munderover > * {display: table-row!important}
+.MJXp-mtable {vertical-align: .25em; margin: 0 .125em}
+.MJXp-mtable > * {display: inline-table!important; vertical-align: middle}
+.MJXp-mtr {display: table-row!important}
+.MJXp-mtd {display: table-cell!important; text-align: center; padding: .5em 0 0 .5em}
+.MJXp-mtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-mlabeledtr {display: table-row!important}
+.MJXp-mlabeledtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mlabeledtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-merror {background-color: #FFFF88; color: #CC0000; border: 1px solid #CC0000; padding: 1px 3px; font-style: normal; font-size: 90%}
+.MJXp-scale0 {-webkit-transform: scaleX(.0); -moz-transform: scaleX(.0); -ms-transform: scaleX(.0); -o-transform: scaleX(.0); transform: scaleX(.0)}
+.MJXp-scale1 {-webkit-transform: scaleX(.1); -moz-transform: scaleX(.1); -ms-transform: scaleX(.1); -o-transform: scaleX(.1); transform: scaleX(.1)}
+.MJXp-scale2 {-webkit-transform: scaleX(.2); -moz-transform: scaleX(.2); -ms-transform: scaleX(.2); -o-transform: scaleX(.2); transform: scaleX(.2)}
+.MJXp-scale3 {-webkit-transform: scaleX(.3); -moz-transform: scaleX(.3); -ms-transform: scaleX(.3); -o-transform: scaleX(.3); transform: scaleX(.3)}
+.MJXp-scale4 {-webkit-transform: scaleX(.4); -moz-transform: scaleX(.4); -ms-transform: scaleX(.4); -o-transform: scaleX(.4); transform: scaleX(.4)}
+.MJXp-scale5 {-webkit-transform: scaleX(.5); -moz-transform: scaleX(.5); -ms-transform: scaleX(.5); -o-transform: scaleX(.5); transform: scaleX(.5)}
+.MJXp-scale6 {-webkit-transform: scaleX(.6); -moz-transform: scaleX(.6); -ms-transform: scaleX(.6); -o-transform: scaleX(.6); transform: scaleX(.6)}
+.MJXp-scale7 {-webkit-transform: scaleX(.7); -moz-transform: scaleX(.7); -ms-transform: scaleX(.7); -o-transform: scaleX(.7); transform: scaleX(.7)}
+.MJXp-scale8 {-webkit-transform: scaleX(.8); -moz-transform: scaleX(.8); -ms-transform: scaleX(.8); -o-transform: scaleX(.8); transform: scaleX(.8)}
+.MJXp-scale9 {-webkit-transform: scaleX(.9); -moz-transform: scaleX(.9); -ms-transform: scaleX(.9); -o-transform: scaleX(.9); transform: scaleX(.9)}
+.MathJax_PHTML .noError {vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}
+</style><style type="text/css">.MathJax_Display {text-align: center; margin: 1em 0em; position: relative; display: block!important; text-indent: 0; max-width: none; max-height: none; min-width: 0; min-height: 0; width: 100%}
+.MathJax .merror {background-color: #FFFF88; color: #CC0000; border: 1px solid #CC0000; padding: 1px 3px; font-style: normal; font-size: 90%}
+.MathJax .MJX-monospace {font-family: monospace}
+.MathJax .MJX-sans-serif {font-family: sans-serif}
+#MathJax_Tooltip {background-color: InfoBackground; color: InfoText; border: 1px solid black; box-shadow: 2px 2px 5px #AAAAAA; -webkit-box-shadow: 2px 2px 5px #AAAAAA; -moz-box-shadow: 2px 2px 5px #AAAAAA; -khtml-box-shadow: 2px 2px 5px #AAAAAA; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true'); padding: 3px 4px; z-index: 401; position: absolute; left: 0; top: 0; width: auto; height: auto; display: none}
+.MathJax {display: inline; font-style: normal; font-weight: normal; line-height: normal; font-size: 100%; font-size-adjust: none; text-indent: 0; text-align: left; text-transform: none; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; direction: ltr; max-width: none; max-height: none; min-width: 0; min-height: 0; border: 0; padding: 0; margin: 0}
+.MathJax:focus, body :focus .MathJax {display: inline-table}
+.MathJax.MathJax_FullWidth {text-align: center; display: table-cell!important; width: 10000em!important}
+.MathJax img, .MathJax nobr, .MathJax a {border: 0; padding: 0; margin: 0; max-width: none; max-height: none; min-width: 0; min-height: 0; vertical-align: 0; line-height: normal; text-decoration: none}
+img.MathJax_strut {border: 0!important; padding: 0!important; margin: 0!important; vertical-align: 0!important}
+.MathJax span {display: inline; position: static; border: 0; padding: 0; margin: 0; vertical-align: 0; line-height: normal; text-decoration: none}
+.MathJax nobr {white-space: nowrap!important}
+.MathJax img {display: inline!important; float: none!important}
+.MathJax * {transition: none; -webkit-transition: none; -moz-transition: none; -ms-transition: none; -o-transition: none}
+.MathJax_Processing {visibility: hidden; position: fixed; width: 0; height: 0; overflow: hidden}
+.MathJax_Processed {display: none!important}
+.MathJax_ExBox {display: block!important; overflow: hidden; width: 1px; height: 60ex; min-height: 0; max-height: none}
+.MathJax .MathJax_EmBox {display: block!important; overflow: hidden; width: 1px; height: 60em; min-height: 0; max-height: none}
+.MathJax_LineBox {display: table!important}
+.MathJax_LineBox span {display: table-cell!important; width: 10000em!important; min-width: 0; max-width: none; padding: 0; border: 0; margin: 0}
+.MathJax .MathJax_HitBox {cursor: text; background: white; opacity: 0; filter: alpha(opacity=0)}
+.MathJax .MathJax_HitBox * {filter: none; opacity: 1; background: transparent}
+#MathJax_Tooltip * {filter: none; opacity: 1; background: transparent}
+@font-face {font-family: MathJax_Blank; src: url('about:blank')}
+.MathJax .noError {vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}
+</style></head>
+<body class="pytorch-body" data-gr-c-s-loaded="true"><div style="visibility: hidden; overflow: hidden; position: absolute; top: 0px; height: 1px; width: auto; padding: 0px; border: 0px; margin: 0px; text-align: left; text-indent: 0px; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal;"><div id="MathJax_Hidden"></div></div><div id="MathJax_Message" style="display: none;"></div><div class="container-fluid header-holder tutorials-header" id="header-holder">
+<div class="container">
+<div class="header-container">
+<a aria-label="PyTorch" class="header-logo" href="https://pytorch.org/"></a>
+<div class="main-menu">
+<ul>
+<li>
+<a href="https://pytorch.org/get-started">Get Started</a>
+</li>
+<li>
+<a href="https://pytorch.org/features">Features</a>
+</li>
+<li>
+<a href="https://pytorch.org/ecosystem">Ecosystem</a>
+</li>
+<li>
+<a href="https://pytorch.org/blog/">Blog</a>
+</li>
+<li class="active">
+<a href="https://pytorch.org/tutorials">Tutorials</a>
+</li>
+<li>
+<a href="https://pytorch.org/docs/stable/index.html">Docs</a>
+</li>
+<li>
+<a href="https://pytorch.org/resources">Resources</a>
+</li>
+<li>
+<a href="https://github.com/pytorch/pytorch">Github</a>
+</li>
+</ul>
+</div>
+<a class="main-menu-open-button" data-behavior="open-mobile-menu" href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#"></a>
+</div>
+</div>
+</div>
+
+<div class="table-of-contents-link-wrapper">
+<span>Table of Contents</span>
+<a class="toggle-table-of-contents" data-behavior="toggle-table-of-contents" href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#"></a>
+</div>
+<nav class="pytorch-left-menu make-fixed" data-toggle="wy-nav-shift" id="pytorch-left-menu" style="height: 100%;">
+<div class="pytorch-side-scroll">
+<div aria-label="main navigation" class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation">
+<div class="pytorch-left-menu-search">
+<div class="version">
+                  1.0.0.dev20181207
+                </div>
+<div role="search">
+<form action="https://pytorch.org/tutorials/search.html" class="wy-form" id="rtd-search-form" method="get">
+<input name="q" placeholder="Search Tutorials" type="text">
+<input name="check_keywords" type="hidden" value="yes">
+<input name="area" type="hidden" value="default">
+</form>
+</div>
+</div>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/beginner/deep_learning_60min_blitz.html">Deep Learning with PyTorch: A 60 Minute Blitz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/beginner/data_loading_tutorial.html">Data Loading and Processing Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/beginner/pytorch_with_examples.html">Learning PyTorch with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/beginner/transfer_learning_tutorial.html">Transfer Learning Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/beginner/deploy_seq2seq_hybrid_frontend_tutorial.html">Deploying a Seq2Seq Model with the Hybrid Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/beginner/saving_loading_models.html">Saving and Loading Models</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Image</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/beginner/finetuning_torchvision_models_tutorial.html">Finetuning Torchvision Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/intermediate/spatial_transformer_tutorial.html">Spatial Transformer Networks Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/advanced/neural_style_tutorial.html">Neural Transfer Using PyTorch</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/beginner/fgsm_tutorial.html">Adversarial Example Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/advanced/super_resolution_with_caffe2.html">Transfering a Model from PyTorch to Caffe2 and Mobile using ONNX</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Text</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/beginner/chatbot_tutorial.html">Chatbot Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/intermediate/char_rnn_generation_tutorial.html">Generating Names with a Character-Level RNN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/intermediate/char_rnn_classification_tutorial.html">Classifying Names with a Character-Level RNN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/beginner/deep_learning_nlp_tutorial.html">Deep Learning for NLP with Pytorch</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/intermediate/seq2seq_translation_tutorial.html">Translation with a Sequence to Sequence Network and Attention</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Generative</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal current" href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#">DCGAN Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reinforcement Learning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html">Reinforcement Learning (DQN) Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Extending PyTorch</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/advanced/numpy_extensions_tutorial.html">Creating Extensions Using numpy and scipy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/advanced/cpp_extension.html">Custom C++ and CUDA Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/advanced/torch_script_custom_ops.html">Extending TorchScript with Custom C++ Operators</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Production Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/intermediate/dist_tuto.html">Writing Distributed Applications with PyTorch</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/advanced/ONNXLive.html">ONNX Live Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="https://pytorch.org/tutorials/advanced/cpp_export.html">Loading a PyTorch Model in C++</a></li>
+</ul>
+</div>
+</div>
+</nav>
+<div class="pytorch-container">
+<div class="pytorch-page-level-bar left-menu-is-fixed" id="pytorch-page-level-bar">
+<div class="pytorch-breadcrumbs-wrapper">
+<div aria-label="breadcrumbs navigation" role="navigation">
+<ul class="pytorch-breadcrumbs">
+<li>
+<a href="https://pytorch.org/tutorials/index.html">
+          
+            Tutorials
+          
+        </a> &gt;
+      </li>
+<li>DCGAN Tutorial</li>
+<li class="pytorch-breadcrumbs-aside">
+<a href="https://pytorch.org/tutorials/_sources/beginner/dcgan_faces_tutorial.rst.txt" rel="nofollow"><img src="./DCGAN Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/view-page-source-icon.svg"></a>
+</li>
+</ul>
+</div>
+</div>
+<div class="pytorch-shortcuts-wrapper" id="pytorch-shortcuts-wrapper" style="display: block;">
+          Shortcuts
+        </div>
+</div>
+<section class="pytorch-content-wrap" data-toggle="wy-nav-shift" id="pytorch-content-wrap">
+<div class="pytorch-content-left">
+<div class="rst-content">
+<div class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<article class="pytorch-article" id="pytorch-article" itemprop="articleBody">
+<div class="sphx-glr-download-link-note admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Click <a class="reference internal" href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#sphx-glr-download-beginner-dcgan-faces-tutorial-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+</div>
+<div class="sphx-glr-example-title section" id="dcgan-tutorial">
+<span id="sphx-glr-beginner-dcgan-faces-tutorial-py"></span><h1>DCGAN Tutorial<a class="anchorjs-link " href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#dcgan-tutorial" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h1>
+<p><strong>Author</strong>: <a class="reference external" href="https://github.com/inkawhich">Nathan Inkawhich</a></p>
+<div class="section" id="introduction">
+<h2>Introduction<a class="anchorjs-link " href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#introduction" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<p>This tutorial will give an introduction to DCGANs through an example. We
+will train a generative adversarial network (GAN) to generate new
+celebrities after showing it pictures of many real celebrities. Most of
+the code here is from the dcgan implementation in
+<a class="reference external" href="https://github.com/pytorch/examples">pytorch/examples</a>, and this
+document will give a thorough explanation of the implementation and shed
+light on how and why this model works. But don’t worry, no prior
+knowledge of GANs is required, but it may require a first-timer to spend
+some time reasoning about what is actually happening under the hood.
+Also, for the sake of time it will help to have a GPU, or two. Lets
+start from the beginning.</p>
+</div>
+<div class="section" id="generative-adversarial-networks">
+<h2>Generative Adversarial Networks<a class="anchorjs-link " href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#generative-adversarial-networks" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<div class="section" id="what-is-a-gan">
+<h3>What is a GAN?<a class="anchorjs-link " href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#what-is-a-gan" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+<p>GANs are a framework for teaching a DL model to capture the training
+data’s distribution so we can generate new data from that same
+distribution. GANs were invented by Ian Goodfellow in 2014 and first
+described in the paper <a class="reference external" href="https://papers.nips.cc/paper/5423-generative-adversarial-nets.pdf">Generative Adversarial
+Nets</a>.
+They are made of two distinct models, a <em>generator</em> and a
+<em>discriminator</em>. The job of the generator is to spawn ‘fake’ images that
+look like the training images. The job of the discriminator is to look
+at an image and output whether or not it is a real training image or a
+fake image from the generator. During training, the generator is
+constantly trying to outsmart the discriminator by generating better and
+better fakes, while the discriminator is working to become a better
+detective and correctly classify the real and fake images. The
+equilibrium of this game is when the generator is generating perfect
+fakes that look as if they came directly from the training data, and the
+discriminator is left to always guess at 50% confidence that the
+generator output is real or fake.</p>
+<p>Now, lets define some notation to be used throughout tutorial starting
+with the discriminator. Let <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-1-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>x</mi></math></span></span><script type="math/tex" id="MathJax-Element-1">x</script></span> be data representing an image.
+<span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-2-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>D</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></math></span></span><script type="math/tex" id="MathJax-Element-2">D(x)</script></span> is the discriminator network which outputs the (scalar)
+probability that <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-3-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>x</mi></math></span></span><script type="math/tex" id="MathJax-Element-3">x</script></span> came from training data rather than the
+generator. Here, since we are dealing with images the input to
+<span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-4-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>D</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></math></span></span><script type="math/tex" id="MathJax-Element-4">D(x)</script></span> is an image of HWC size 3x64x64. Intuitively, <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-5-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>D</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></math></span></span><script type="math/tex" id="MathJax-Element-5">D(x)</script></span>
+should be HIGH when <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-6-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>x</mi></math></span></span><script type="math/tex" id="MathJax-Element-6">x</script></span> comes from training data and LOW when
+<span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-7-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>x</mi></math></span></span><script type="math/tex" id="MathJax-Element-7">x</script></span> comes from the generator. <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-8-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>D</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></math></span></span><script type="math/tex" id="MathJax-Element-8">D(x)</script></span> can also be thought of
+as a traditional binary classifier.</p>
+<p>For the generator’s notation, let <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-9-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;z&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>z</mi></math></span></span><script type="math/tex" id="MathJax-Element-9">z</script></span> be a latent space vector
+sampled from a standard normal distribution. <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-10-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;G&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;z&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>G</mi><mo stretchy="false">(</mo><mi>z</mi><mo stretchy="false">)</mo></math></span></span><script type="math/tex" id="MathJax-Element-10">G(z)</script></span> represents the
+generator function which maps the latent vector <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-11-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;z&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>z</mi></math></span></span><script type="math/tex" id="MathJax-Element-11">z</script></span> to data-space.
+The goal of <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-12-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;G&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>G</mi></math></span></span><script type="math/tex" id="MathJax-Element-12">G</script></span> is to estimate the distribution that the training
+data comes from (<span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-13-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;msub&gt;&lt;mi&gt;p&lt;/mi&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mi&gt;d&lt;/mi&gt;&lt;mi&gt;a&lt;/mi&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mi&gt;a&lt;/mi&gt;&lt;/mrow&gt;&lt;/msub&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>p</mi><mrow class="MJX-TeXAtom-ORD"><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi></mrow></msub></math></span></span><script type="math/tex" id="MathJax-Element-13">p_{data}</script></span>) so it can generate fake samples from
+that estimated distribution (<span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-14-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;msub&gt;&lt;mi&gt;p&lt;/mi&gt;&lt;mi&gt;g&lt;/mi&gt;&lt;/msub&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>p</mi><mi>g</mi></msub></math></span></span><script type="math/tex" id="MathJax-Element-14">p_g</script></span>).</p>
+<p>So, <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-15-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;G&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;z&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>D</mi><mo stretchy="false">(</mo><mi>G</mi><mo stretchy="false">(</mo><mi>z</mi><mo stretchy="false">)</mo><mo stretchy="false">)</mo></math></span></span><script type="math/tex" id="MathJax-Element-15">D(G(z))</script></span> is the probability (scalar) that the output of the
+generator <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-16-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;G&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>G</mi></math></span></span><script type="math/tex" id="MathJax-Element-16">G</script></span> is a real image. As described in <a class="reference external" href="https://papers.nips.cc/paper/5423-generative-adversarial-nets.pdf">Goodfellow’s
+paper</a>,
+<span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-17-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>D</mi></math></span></span><script type="math/tex" id="MathJax-Element-17">D</script></span> and <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-18-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;G&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>G</mi></math></span></span><script type="math/tex" id="MathJax-Element-18">G</script></span> play a minimax game in which <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-19-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>D</mi></math></span></span><script type="math/tex" id="MathJax-Element-19">D</script></span> tries to
+maximize the probability it correctly classifies reals and fakes
+(<span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-20-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;l&lt;/mi&gt;&lt;mi&gt;o&lt;/mi&gt;&lt;mi&gt;g&lt;/mi&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>l</mi><mi>o</mi><mi>g</mi><mi>D</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></math></span></span><script type="math/tex" id="MathJax-Element-20">logD(x)</script></span>), and <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-21-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;G&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>G</mi></math></span></span><script type="math/tex" id="MathJax-Element-21">G</script></span> tries to minimize the probability that
+<span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-22-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>D</mi></math></span></span><script type="math/tex" id="MathJax-Element-22">D</script></span> will predict its outputs are fake (<span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-23-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;l&lt;/mi&gt;&lt;mi&gt;o&lt;/mi&gt;&lt;mi&gt;g&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;mo&gt;&amp;#x2212;&lt;/mo&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;G&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>l</mi><mi>o</mi><mi>g</mi><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>D</mi><mo stretchy="false">(</mo><mi>G</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mo stretchy="false">)</mo><mo stretchy="false">)</mo></math></span></span><script type="math/tex" id="MathJax-Element-23">log(1-D(G(x)))</script></span>).
+From the paper, the GAN loss function is</p>
+<div class="math notranslate nohighlight">
+<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-24-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot; display=&quot;block&quot;&gt;&lt;munder&gt;&lt;mtext&gt;min&lt;/mtext&gt;&lt;mi&gt;G&lt;/mi&gt;&lt;/munder&gt;&lt;munder&gt;&lt;mtext&gt;max&lt;/mtext&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;/munder&gt;&lt;mi&gt;V&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;mo&gt;,&lt;/mo&gt;&lt;mi&gt;G&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;msub&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mi mathvariant=&quot;double-struck&quot;&gt;E&lt;/mi&gt;&lt;/mrow&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mo&gt;&amp;#x223C;&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;p&lt;/mi&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mi&gt;d&lt;/mi&gt;&lt;mi&gt;a&lt;/mi&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mi&gt;a&lt;/mi&gt;&lt;/mrow&gt;&lt;/msub&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/mrow&gt;&lt;/msub&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mo maxsize=&quot;1.2em&quot; minsize=&quot;1.2em&quot;&gt;[&lt;/mo&gt;&lt;/mrow&gt;&lt;mi&gt;l&lt;/mi&gt;&lt;mi&gt;o&lt;/mi&gt;&lt;mi&gt;g&lt;/mi&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mo maxsize=&quot;1.2em&quot; minsize=&quot;1.2em&quot;&gt;]&lt;/mo&gt;&lt;/mrow&gt;&lt;mo&gt;+&lt;/mo&gt;&lt;msub&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mi mathvariant=&quot;double-struck&quot;&gt;E&lt;/mi&gt;&lt;/mrow&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mi&gt;z&lt;/mi&gt;&lt;mo&gt;&amp;#x223C;&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;p&lt;/mi&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mi&gt;z&lt;/mi&gt;&lt;/mrow&gt;&lt;/msub&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;z&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/mrow&gt;&lt;/msub&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mo maxsize=&quot;1.2em&quot; minsize=&quot;1.2em&quot;&gt;[&lt;/mo&gt;&lt;/mrow&gt;&lt;mi&gt;l&lt;/mi&gt;&lt;mi&gt;o&lt;/mi&gt;&lt;mi&gt;g&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;mo&gt;&amp;#x2212;&lt;/mo&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;G&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mo maxsize=&quot;1.2em&quot; minsize=&quot;1.2em&quot;&gt;]&lt;/mo&gt;&lt;/mrow&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML MJX_Assistive_MathML_Block" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><munder><mtext>min</mtext><mi>G</mi></munder><munder><mtext>max</mtext><mi>D</mi></munder><mi>V</mi><mo stretchy="false">(</mo><mi>D</mi><mo>,</mo><mi>G</mi><mo stretchy="false">)</mo><mo>=</mo><msub><mrow class="MJX-TeXAtom-ORD"><mi mathvariant="double-struck">E</mi></mrow><mrow class="MJX-TeXAtom-ORD"><mi>x</mi><mo>∼</mo><msub><mi>p</mi><mrow class="MJX-TeXAtom-ORD"><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi></mrow></msub><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></mrow></msub><mrow class="MJX-TeXAtom-ORD"><mo maxsize="1.2em" minsize="1.2em">[</mo></mrow><mi>l</mi><mi>o</mi><mi>g</mi><mi>D</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mrow class="MJX-TeXAtom-ORD"><mo maxsize="1.2em" minsize="1.2em">]</mo></mrow><mo>+</mo><msub><mrow class="MJX-TeXAtom-ORD"><mi mathvariant="double-struck">E</mi></mrow><mrow class="MJX-TeXAtom-ORD"><mi>z</mi><mo>∼</mo><msub><mi>p</mi><mrow class="MJX-TeXAtom-ORD"><mi>z</mi></mrow></msub><mo stretchy="false">(</mo><mi>z</mi><mo stretchy="false">)</mo></mrow></msub><mrow class="MJX-TeXAtom-ORD"><mo maxsize="1.2em" minsize="1.2em">[</mo></mrow><mi>l</mi><mi>o</mi><mi>g</mi><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>D</mi><mo stretchy="false">(</mo><mi>G</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mo stretchy="false">)</mo><mo stretchy="false">)</mo><mrow class="MJX-TeXAtom-ORD"><mo maxsize="1.2em" minsize="1.2em">]</mo></mrow></math></span></span><script type="math/tex; mode=display" id="MathJax-Element-24">\underset{G}{\text{min}} \underset{D}{\text{max}}V(D,G) = \mathbb{E}_{x\sim p_{data}(x)}\big[logD(x)\big] + \mathbb{E}_{z\sim p_{z}(z)}\big[log(1-D(G(x)))\big]</script></div>
+<p>In theory, the solution to this minimax game is where
+<span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-25-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;msub&gt;&lt;mi&gt;p&lt;/mi&gt;&lt;mi&gt;g&lt;/mi&gt;&lt;/msub&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;p&lt;/mi&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mi&gt;d&lt;/mi&gt;&lt;mi&gt;a&lt;/mi&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mi&gt;a&lt;/mi&gt;&lt;/mrow&gt;&lt;/msub&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>p</mi><mi>g</mi></msub><mo>=</mo><msub><mi>p</mi><mrow class="MJX-TeXAtom-ORD"><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi></mrow></msub></math></span></span><script type="math/tex" id="MathJax-Element-25">p_g = p_{data}</script></span>, and the discriminator guesses randomly if the
+inputs are real or fake. However, the convergence theory of GANs is
+still being actively researched and in reality models do not always
+train to this point.</p>
+</div>
+<div class="section" id="what-is-a-dcgan">
+<h3>What is a DCGAN?<a class="anchorjs-link " href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#what-is-a-dcgan" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+<p>A DCGAN is a direct extension of the GAN described above, except that it
+explicitly uses convolutional and convolutional-transpose layers in the
+discriminator and generator, respectively. It was first described by
+Radford et. al.&nbsp;in the paper <a class="reference external" href="https://arxiv.org/pdf/1511.06434.pdf">Unsupervised Representation Learning With
+Deep Convolutional Generative Adversarial
+Networks</a>. The discriminator
+is made up of strided
+<a class="reference external" href="https://pytorch.org/docs/stable/nn.html#torch.nn.Conv2d">convolution</a>
+layers, <a class="reference external" href="https://pytorch.org/docs/stable/nn.html#torch.nn.BatchNorm2d">batch
+norm</a>
+layers, and
+<a class="reference external" href="https://pytorch.org/docs/stable/nn.html#torch.nn.LeakyReLU">LeakyReLU</a>
+activations. The input is a 3x64x64 input image and the output is a
+scalar probability that the input is from the real data distribution.
+The generator is comprised of
+<a class="reference external" href="https://pytorch.org/docs/stable/nn.html#torch.nn.ConvTranspose2d">convolutional-transpose</a>
+layers, batch norm layers, and
+<a class="reference external" href="https://pytorch.org/docs/stable/nn.html#relu">ReLU</a> activations. The
+input is a latent vector, <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-26-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;z&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>z</mi></math></span></span><script type="math/tex" id="MathJax-Element-26">z</script></span>, that is drawn from a standard
+normal distribution and the output is a 3x64x64 RGB image. The strided
+conv-transpose layers allow the latent vector to be transformed into a
+volume with the same shape as an image. In the paper, the authors also
+give some tips about how to setup the optimizers, how to calculate the
+loss functions, and how to initialize the model weights, all of which
+will be explained in the coming sections.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+<span class="c1">#%matplotlib inline</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="kn">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch.nn.parallel</span>
+<span class="kn">import</span> <span class="nn">torch.backends.cudnn</span> <span class="kn">as</span> <span class="nn">cudnn</span>
+<span class="kn">import</span> <span class="nn">torch.optim</span> <span class="kn">as</span> <span class="nn">optim</span>
+<span class="kn">import</span> <span class="nn">torch.utils.data</span>
+<span class="kn">import</span> <span class="nn">torchvision.datasets</span> <span class="kn">as</span> <span class="nn">dset</span>
+<span class="kn">import</span> <span class="nn">torchvision.transforms</span> <span class="kn">as</span> <span class="nn">transforms</span>
+<span class="kn">import</span> <span class="nn">torchvision.utils</span> <span class="kn">as</span> <span class="nn">vutils</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib.animation</span> <span class="kn">as</span> <span class="nn">animation</span>
+<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">HTML</span>
+
+<span class="c1"># Set random seem for reproducibility</span>
+<span class="n">manualSeed</span> <span class="o">=</span> <span class="mi">999</span>
+<span class="c1">#manualSeed = random.randint(1, 10000) # use if you want new results</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">"Random Seed: "</span><span class="p">,</span> <span class="n">manualSeed</span><span class="p">)</span>
+<span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">manualSeed</span><span class="p">)</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="n">manualSeed</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Random Seed:  999
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="inputs">
+<h2>Inputs<a class="anchorjs-link " href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#inputs" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<p>Let’s define some inputs for the run:</p>
+<ul class="simple">
+<li><strong>dataroot</strong> - the path to the root of the dataset folder. We will
+talk more about the dataset in the next section</li>
+<li><strong>workers</strong> - the number of worker threads for loading the data with
+the DataLoader</li>
+<li><strong>batch_size</strong> - the batch size used in training. The DCGAN paper
+uses a batch size of 128</li>
+<li><strong>image_size</strong> - the spatial size of the images used for training.
+This implementation defaults to 64x64. If another size is desired,
+the structures of D and G must be changed. See
+<a class="reference external" href="https://github.com/pytorch/examples/issues/70">here</a> for more
+details</li>
+<li><strong>nc</strong> - number of color channels in the input images. For color
+images this is 3</li>
+<li><strong>nz</strong> - length of latent vector</li>
+<li><strong>ngf</strong> - relates to the depth of feature maps carried through the
+generator</li>
+<li><strong>ndf</strong> - sets the depth of feature maps propagated through the
+discriminator</li>
+<li><strong>num_epochs</strong> - number of training epochs to run. Training for
+longer will probably lead to better results but will also take much
+longer</li>
+<li><strong>lr</strong> - learning rate for training. As described in the DCGAN paper,
+this number should be 0.0002</li>
+<li><strong>beta1</strong> - beta1 hyperparameter for Adam optimizers. As described in
+paper, this number should be 0.5</li>
+<li><strong>ngpu</strong> - number of GPUs available. If this is 0, code will run in
+CPU mode. If this number is greater than 0 it will run on that number
+of GPUs</li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Root directory for dataset</span>
+<span class="n">dataroot</span> <span class="o">=</span> <span class="s2">"data/celeba"</span>
+
+<span class="c1"># Number of workers for dataloader</span>
+<span class="n">workers</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="c1"># Batch size during training</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">128</span>
+
+<span class="c1"># Spatial size of training images. All images will be resized to this</span>
+<span class="c1">#   size using a transformer.</span>
+<span class="n">image_size</span> <span class="o">=</span> <span class="mi">64</span>
+
+<span class="c1"># Number of channels in the training images. For color images this is 3</span>
+<span class="n">nc</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="c1"># Size of z latent vector (i.e. size of generator input)</span>
+<span class="n">nz</span> <span class="o">=</span> <span class="mi">100</span>
+
+<span class="c1"># Size of feature maps in generator</span>
+<span class="n">ngf</span> <span class="o">=</span> <span class="mi">64</span>
+
+<span class="c1"># Size of feature maps in discriminator</span>
+<span class="n">ndf</span> <span class="o">=</span> <span class="mi">64</span>
+
+<span class="c1"># Number of training epochs</span>
+<span class="n">num_epochs</span> <span class="o">=</span> <span class="mi">5</span>
+
+<span class="c1"># Learning rate for optimizers</span>
+<span class="n">lr</span> <span class="o">=</span> <span class="mf">0.0002</span>
+
+<span class="c1"># Beta1 hyperparam for Adam optimizers</span>
+<span class="n">beta1</span> <span class="o">=</span> <span class="mf">0.5</span>
+
+<span class="c1"># Number of GPUs available. Use 0 for CPU mode.</span>
+<span class="n">ngpu</span> <span class="o">=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="data">
+<h2>Data<a class="anchorjs-link " href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#data" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<p>In this tutorial we will use the <a class="reference external" href="http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html">Celeb-A Faces
+dataset</a> which can
+be downloaded at the linked site, or in <a class="reference external" href="https://drive.google.com/drive/folders/0B7EVK8r0v71pTUZsaXdaSnZBZzg">Google
+Drive</a>.
+The dataset will download as a file named <em>img_align_celeba.zip</em>. Once
+downloaded, create a directory named <em>celeba</em> and extract the zip file
+into that directory. Then, set the <em>dataroot</em> input for this notebook to
+the <em>celeba</em> directory you just created. The resulting directory
+structure should be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">celeba</span>
+    <span class="o">-&gt;</span> <span class="n">img_align_celeba</span>
+        <span class="o">-&gt;</span> <span class="mf">188242.</span><span class="n">jpg</span>
+        <span class="o">-&gt;</span> <span class="mf">173822.</span><span class="n">jpg</span>
+        <span class="o">-&gt;</span> <span class="mf">284702.</span><span class="n">jpg</span>
+        <span class="o">-&gt;</span> <span class="mf">537394.</span><span class="n">jpg</span>
+           <span class="o">...</span>
+</pre></div>
+</div>
+<p>This is an important step because we will be using the ImageFolder
+dataset class, which requires there to be subdirectories in the
+dataset’s root folder. Now, we can create the dataset, create the
+dataloader, set the device to run on, and finally visualize some of the
+training data.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># We can use an image folder dataset the way we have it setup.</span>
+<span class="c1"># Create the dataset</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">dset</span><span class="o">.</span><span class="n">ImageFolder</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">dataroot</span><span class="p">,</span>
+                           <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">([</span>
+                               <span class="n">transforms</span><span class="o">.</span><span class="n">Resize</span><span class="p">(</span><span class="n">image_size</span><span class="p">),</span>
+                               <span class="n">transforms</span><span class="o">.</span><span class="n">CenterCrop</span><span class="p">(</span><span class="n">image_size</span><span class="p">),</span>
+                               <span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
+                               <span class="n">transforms</span><span class="o">.</span><span class="n">Normalize</span><span class="p">((</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)),</span>
+                           <span class="p">]))</span>
+<span class="c1"># Create the dataloader</span>
+<span class="n">dataloader</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+                                         <span class="n">shuffle</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="n">workers</span><span class="p">)</span>
+
+<span class="c1"># Decide which device we want to run on</span>
+<span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">"cuda:0"</span> <span class="k">if</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="ow">and</span> <span class="n">ngpu</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="k">else</span> <span class="s2">"cpu"</span><span class="p">)</span>
+
+<span class="c1"># Plot some training images</span>
+<span class="n">real_batch</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">dataloader</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">"off"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"Training Images"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">vutils</span><span class="o">.</span><span class="n">make_grid</span><span class="p">(</span><span class="n">real_batch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)[:</span><span class="mi">64</span><span class="p">],</span> <span class="n">padding</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="o">.</span><span class="n">cpu</span><span class="p">(),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">)))</span>
+</pre></div>
+</div>
+<img alt="../_images/sphx_glr_dcgan_faces_tutorial_001.png" class="sphx-glr-single-img" src="./DCGAN Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/sphx_glr_dcgan_faces_tutorial_001.png">
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="anchorjs-link " href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#implementation" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<p>With our input parameters set and the dataset prepared, we can now get
+into the implementation. We will start with the weigth initialization
+strategy, then talk about the generator, discriminator, loss functions,
+and training loop in detail.</p>
+<div class="section" id="weight-initialization">
+<h3>Weight Initialization<a class="anchorjs-link " href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#weight-initialization" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+<p>From the DCGAN paper, the authors specify that all model weights shall
+be randomly initialized from a Normal distribution with mean=0,
+stdev=0.2. The <code class="docutils literal notranslate"><span class="pre">weights_init</span></code> function takes an initialized model as
+input and reinitializes all convolutional, convolutional-transpose, and
+batch normalization layers to meet this criteria. This function is
+applied to the models immediately after initialization.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># custom weights initialization called on netG and netD</span>
+<span class="k">def</span> <span class="nf">weights_init</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+    <span class="n">classname</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+    <span class="k">if</span> <span class="n">classname</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'Conv'</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">normal_</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">classname</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'BatchNorm'</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">normal_</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">)</span>
+        <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">constant_</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="generator">
+<h3>Generator<a class="anchorjs-link " href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#generator" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+<p>The generator, <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-27-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;G&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>G</mi></math></span></span><script type="math/tex" id="MathJax-Element-27">G</script></span>, is designed to map the latent space vector
+(<span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-28-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;z&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>z</mi></math></span></span><script type="math/tex" id="MathJax-Element-28">z</script></span>) to data-space. Since our data are images, converting
+<span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-29-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;z&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>z</mi></math></span></span><script type="math/tex" id="MathJax-Element-29">z</script></span> to data-space means ultimately creating a RGB image with the
+same size as the training images (i.e.&nbsp;3x64x64). In practice, this is
+accomplished through a series of strided two dimensional convolutional
+transpose layers, each paired with a 2d batch norm layer and a relu
+activation. The output of the generator is fed through a tanh function
+to return it to the input data range of <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-30-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mo stretchy=&quot;false&quot;&gt;[&lt;/mo&gt;&lt;mo&gt;&amp;#x2212;&lt;/mo&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;mo&gt;,&lt;/mo&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;mo stretchy=&quot;false&quot;&gt;]&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mo stretchy="false">[</mo><mo>−</mo><mn>1</mn><mo>,</mo><mn>1</mn><mo stretchy="false">]</mo></math></span></span><script type="math/tex" id="MathJax-Element-30">[-1,1]</script></span>. It is worth
+noting the existence of the batch norm functions after the
+conv-transpose layers, as this is a critical contribution of the DCGAN
+paper. These layers help with the flow of gradients during training. An
+image of the generator from the DCGAN paper is shown below.</p>
+<div class="figure">
+<img alt="dcgan_generator" src="./DCGAN Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/dcgan_generator.png">
+</div>
+<p>Notice, the how the inputs we set in the input section (<em>nz</em>, <em>ngf</em>, and
+<em>nc</em>) influence the generator architecture in code. <em>nz</em> is the length
+of the z input vector, <em>ngf</em> relates to the size of the feature maps
+that are propagated through the generator, and <em>nc</em> is the number of
+channels in the output image (set to 3 for RGB images). Below is the
+code for the generator.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generator Code</span>
+
+<span class="k">class</span> <span class="nc">Generator</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ngpu</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Generator</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ngpu</span> <span class="o">=</span> <span class="n">ngpu</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="c1"># input is Z, going into a convolution</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">ConvTranspose2d</span><span class="p">(</span> <span class="n">nz</span><span class="p">,</span> <span class="n">ngf</span> <span class="o">*</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">ngf</span> <span class="o">*</span> <span class="mi">8</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(</span><span class="bp">True</span><span class="p">),</span>
+            <span class="c1"># state size. (ngf*8) x 4 x 4</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">ConvTranspose2d</span><span class="p">(</span><span class="n">ngf</span> <span class="o">*</span> <span class="mi">8</span><span class="p">,</span> <span class="n">ngf</span> <span class="o">*</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">ngf</span> <span class="o">*</span> <span class="mi">4</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(</span><span class="bp">True</span><span class="p">),</span>
+            <span class="c1"># state size. (ngf*4) x 8 x 8</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">ConvTranspose2d</span><span class="p">(</span> <span class="n">ngf</span> <span class="o">*</span> <span class="mi">4</span><span class="p">,</span> <span class="n">ngf</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">ngf</span> <span class="o">*</span> <span class="mi">2</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(</span><span class="bp">True</span><span class="p">),</span>
+            <span class="c1"># state size. (ngf*2) x 16 x 16</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">ConvTranspose2d</span><span class="p">(</span> <span class="n">ngf</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">ngf</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">ngf</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(</span><span class="bp">True</span><span class="p">),</span>
+            <span class="c1"># state size. (ngf) x 32 x 32</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">ConvTranspose2d</span><span class="p">(</span> <span class="n">ngf</span><span class="p">,</span> <span class="n">nc</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Tanh</span><span class="p">()</span>
+            <span class="c1"># state size. (nc) x 64 x 64</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now, we can instantiate the generator and apply the <code class="docutils literal notranslate"><span class="pre">weights_init</span></code>
+function. Check out the printed model to see how the generator object is
+structured.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create the generator</span>
+<span class="n">netG</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span><span class="n">ngpu</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+<span class="c1"># Handle multi-gpu if desired</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">'cuda'</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">ngpu</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="n">netG</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">DataParallel</span><span class="p">(</span><span class="n">netG</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">ngpu</span><span class="p">)))</span>
+
+<span class="c1"># Apply the weights_init function to randomly initialize all weights</span>
+<span class="c1">#  to mean=0, stdev=0.2.</span>
+<span class="n">netG</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">weights_init</span><span class="p">)</span>
+
+<span class="c1"># Print the model</span>
+<span class="k">print</span><span class="p">(</span><span class="n">netG</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Generator(
+  (main): Sequential(
+    (0): ConvTranspose2d(100, 512, kernel_size=(4, 4), stride=(1, 1), bias=False)
+    (1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): ReLU(inplace)
+    (3): ConvTranspose2d(512, 256, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+    (4): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (5): ReLU(inplace)
+    (6): ConvTranspose2d(256, 128, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+    (7): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (8): ReLU(inplace)
+    (9): ConvTranspose2d(128, 64, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+    (10): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (11): ReLU(inplace)
+    (12): ConvTranspose2d(64, 3, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+    (13): Tanh()
+  )
+)
+</pre></div>
+</div>
+</div>
+<div class="section" id="discriminator">
+<h3>Discriminator<a class="anchorjs-link " href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#discriminator" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+<p>As mentioned, the discriminator, <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-31-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>D</mi></math></span></span><script type="math/tex" id="MathJax-Element-31">D</script></span>, is a binary classification
+network that takes an image as input and outputs a scalar probability
+that the input image is real (as opposed to fake). Here, <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-32-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>D</mi></math></span></span><script type="math/tex" id="MathJax-Element-32">D</script></span> takes
+a 3x64x64 input image, processes it through a series of Conv2d,
+BatchNorm2d, and LeakyReLU layers, and outputs the final probability
+through a Sigmoid activation function. This architecture can be extended
+with more layers if necessary for the problem, but there is significance
+to the use of the strided convolution, BatchNorm, and LeakyReLUs. The
+DCGAN paper mentions it is a good practice to use strided convolution
+rather than pooling to downsample because it lets the network learn its
+own pooling function. Also batch norm and leaky relu functions promote
+healthy gradient flow which is critical for the learning process of both
+<span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-33-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;G&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>G</mi></math></span></span><script type="math/tex" id="MathJax-Element-33">G</script></span> and <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-34-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>D</mi></math></span></span><script type="math/tex" id="MathJax-Element-34">D</script></span>.</p>
+<p>Discriminator Code</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Discriminator</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ngpu</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Discriminator</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ngpu</span> <span class="o">=</span> <span class="n">ngpu</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="c1"># input is (nc) x 64 x 64</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span> <span class="n">ndf</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span>
+            <span class="c1"># state size. (ndf) x 32 x 32</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">ndf</span><span class="p">,</span> <span class="n">ndf</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">ndf</span> <span class="o">*</span> <span class="mi">2</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span>
+            <span class="c1"># state size. (ndf*2) x 16 x 16</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">ndf</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">ndf</span> <span class="o">*</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">ndf</span> <span class="o">*</span> <span class="mi">4</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span>
+            <span class="c1"># state size. (ndf*4) x 8 x 8</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">ndf</span> <span class="o">*</span> <span class="mi">4</span><span class="p">,</span> <span class="n">ndf</span> <span class="o">*</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">ndf</span> <span class="o">*</span> <span class="mi">8</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span>
+            <span class="c1"># state size. (ndf*8) x 4 x 4</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">ndf</span> <span class="o">*</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Sigmoid</span><span class="p">()</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now, as with the generator, we can create the discriminator, apply the
+<code class="docutils literal notranslate"><span class="pre">weights_init</span></code> function, and print the model’s structure.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create the Discriminator</span>
+<span class="n">netD</span> <span class="o">=</span> <span class="n">Discriminator</span><span class="p">(</span><span class="n">ngpu</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+<span class="c1"># Handle multi-gpu if desired</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">'cuda'</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">ngpu</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="n">netD</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">DataParallel</span><span class="p">(</span><span class="n">netD</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">ngpu</span><span class="p">)))</span>
+
+<span class="c1"># Apply the weights_init function to randomly initialize all weights</span>
+<span class="c1">#  to mean=0, stdev=0.2.</span>
+<span class="n">netD</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">weights_init</span><span class="p">)</span>
+
+<span class="c1"># Print the model</span>
+<span class="k">print</span><span class="p">(</span><span class="n">netD</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Discriminator(
+  (main): Sequential(
+    (0): Conv2d(3, 64, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+    (1): LeakyReLU(negative_slope=0.2, inplace)
+    (2): Conv2d(64, 128, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+    (3): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (4): LeakyReLU(negative_slope=0.2, inplace)
+    (5): Conv2d(128, 256, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+    (6): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (7): LeakyReLU(negative_slope=0.2, inplace)
+    (8): Conv2d(256, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+    (9): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (10): LeakyReLU(negative_slope=0.2, inplace)
+    (11): Conv2d(512, 1, kernel_size=(4, 4), stride=(1, 1), bias=False)
+    (12): Sigmoid()
+  )
+)
+</pre></div>
+</div>
+</div>
+<div class="section" id="loss-functions-and-optimizers">
+<h3>Loss Functions and Optimizers<a class="anchorjs-link " href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#loss-functions-and-optimizers" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+<p>With <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-35-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>D</mi></math></span></span><script type="math/tex" id="MathJax-Element-35">D</script></span> and <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-36-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;G&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>G</mi></math></span></span><script type="math/tex" id="MathJax-Element-36">G</script></span> setup, we can specify how they learn
+through the loss functions and optimizers. We will use the Binary Cross
+Entropy loss
+(<a class="reference external" href="https://pytorch.org/docs/stable/nn.html#torch.nn.BCELoss">BCELoss</a>)
+function which is defined in PyTorch as:</p>
+<div class="math notranslate nohighlight">
+<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-37-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot; display=&quot;block&quot;&gt;&lt;mi&gt;&amp;#x2113;&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mo&gt;,&lt;/mo&gt;&lt;mi&gt;y&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;mi&gt;L&lt;/mi&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;mo fence=&quot;false&quot; stretchy=&quot;false&quot;&gt;{&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;l&lt;/mi&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;/msub&gt;&lt;mo&gt;,&lt;/mo&gt;&lt;mo&gt;&amp;#x2026;&lt;/mo&gt;&lt;mo&gt;,&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;l&lt;/mi&gt;&lt;mi&gt;N&lt;/mi&gt;&lt;/msub&gt;&lt;msup&gt;&lt;mo fence=&quot;false&quot; stretchy=&quot;false&quot;&gt;}&lt;/mo&gt;&lt;mi mathvariant=&quot;normal&quot;&gt;&amp;#x22A4;&lt;/mi&gt;&lt;/msup&gt;&lt;mo&gt;,&lt;/mo&gt;&lt;mspace width=&quot;1em&quot; /&gt;&lt;msub&gt;&lt;mi&gt;l&lt;/mi&gt;&lt;mi&gt;n&lt;/mi&gt;&lt;/msub&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;mo&gt;&amp;#x2212;&lt;/mo&gt;&lt;mrow&gt;&lt;mo&gt;[&lt;/mo&gt;&lt;mrow&gt;&lt;msub&gt;&lt;mi&gt;y&lt;/mi&gt;&lt;mi&gt;n&lt;/mi&gt;&lt;/msub&gt;&lt;mo&gt;&amp;#x22C5;&lt;/mo&gt;&lt;mi&gt;log&lt;/mi&gt;&lt;mo&gt;&amp;#x2061;&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mi&gt;n&lt;/mi&gt;&lt;/msub&gt;&lt;mo&gt;+&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;mo&gt;&amp;#x2212;&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;y&lt;/mi&gt;&lt;mi&gt;n&lt;/mi&gt;&lt;/msub&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo&gt;&amp;#x22C5;&lt;/mo&gt;&lt;mi&gt;log&lt;/mi&gt;&lt;mo&gt;&amp;#x2061;&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;mo&gt;&amp;#x2212;&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mi&gt;n&lt;/mi&gt;&lt;/msub&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/mrow&gt;&lt;mo&gt;]&lt;/mo&gt;&lt;/mrow&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML MJX_Assistive_MathML_Block" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mi>ℓ</mi><mo stretchy="false">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false">)</mo><mo>=</mo><mi>L</mi><mo>=</mo><mo fence="false" stretchy="false">{</mo><msub><mi>l</mi><mn>1</mn></msub><mo>,</mo><mo>…</mo><mo>,</mo><msub><mi>l</mi><mi>N</mi></msub><msup><mo fence="false" stretchy="false">}</mo><mi mathvariant="normal">⊤</mi></msup><mo>,</mo><mspace width="1em"></mspace><msub><mi>l</mi><mi>n</mi></msub><mo>=</mo><mo>−</mo><mrow><mo>[</mo><mrow><msub><mi>y</mi><mi>n</mi></msub><mo>⋅</mo><mi>log</mi><mo>⁡</mo><msub><mi>x</mi><mi>n</mi></msub><mo>+</mo><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><msub><mi>y</mi><mi>n</mi></msub><mo stretchy="false">)</mo><mo>⋅</mo><mi>log</mi><mo>⁡</mo><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><msub><mi>x</mi><mi>n</mi></msub><mo stretchy="false">)</mo></mrow><mo>]</mo></mrow></math></span></span><script type="math/tex; mode=display" id="MathJax-Element-37">\ell(x, y) = L = \{l_1,\dots,l_N\}^\top, \quad l_n = - \left[ y_n \cdot \log x_n + (1 - y_n) \cdot \log (1 - x_n) \right]</script></div>
+<p>Notice how this function provides the calculation of both log components
+in the objective function (i.e. <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-38-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;l&lt;/mi&gt;&lt;mi&gt;o&lt;/mi&gt;&lt;mi&gt;g&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>l</mi><mi>o</mi><mi>g</mi><mo stretchy="false">(</mo><mi>D</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mo stretchy="false">)</mo></math></span></span><script type="math/tex" id="MathJax-Element-38">log(D(x))</script></span> and
+<span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-39-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;l&lt;/mi&gt;&lt;mi&gt;o&lt;/mi&gt;&lt;mi&gt;g&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;mo&gt;&amp;#x2212;&lt;/mo&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;G&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;z&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>l</mi><mi>o</mi><mi>g</mi><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>D</mi><mo stretchy="false">(</mo><mi>G</mi><mo stretchy="false">(</mo><mi>z</mi><mo stretchy="false">)</mo><mo stretchy="false">)</mo><mo stretchy="false">)</mo></math></span></span><script type="math/tex" id="MathJax-Element-39">log(1-D(G(z)))</script></span>). We can specify what part of the BCE equation to
+use with the <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-40-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;y&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>y</mi></math></span></span><script type="math/tex" id="MathJax-Element-40">y</script></span> input. This is accomplished in the training loop
+which is coming up soon, but it is important to understand how we can
+choose which component we wish to calculate just by changing <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-41-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;y&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>y</mi></math></span></span><script type="math/tex" id="MathJax-Element-41">y</script></span>
+(i.e.&nbsp;GT labels).</p>
+<p>Next, we define our real label as 1 and the fake label as 0. These
+labels will be used when calculating the losses of <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-42-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>D</mi></math></span></span><script type="math/tex" id="MathJax-Element-42">D</script></span> and
+<span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-43-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;G&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>G</mi></math></span></span><script type="math/tex" id="MathJax-Element-43">G</script></span>, and this is also the convention used in the original GAN
+paper. Finally, we set up two separate optimizers, one for <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-44-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>D</mi></math></span></span><script type="math/tex" id="MathJax-Element-44">D</script></span> and
+one for <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-45-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;G&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>G</mi></math></span></span><script type="math/tex" id="MathJax-Element-45">G</script></span>. As specified in the DCGAN paper, both are Adam
+optimizers with learning rate 0.0002 and Beta1 = 0.5. For keeping track
+of the generator’s learning progression, we will generate a fixed batch
+of latent vectors that are drawn from a Gaussian distribution
+(i.e.&nbsp;fixed_noise) . In the training loop, we will periodically input
+this fixed_noise into <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-46-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;G&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>G</mi></math></span></span><script type="math/tex" id="MathJax-Element-46">G</script></span>, and over the iterations we will see
+images form out of the noise.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize BCELoss function</span>
+<span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BCELoss</span><span class="p">()</span>
+
+<span class="c1"># Create batch of latent vectors that we will use to visualize</span>
+<span class="c1">#  the progression of the generator</span>
+<span class="n">fixed_noise</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="n">nz</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+
+<span class="c1"># Establish convention for real and fake labels during training</span>
+<span class="n">real_label</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">fake_label</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1"># Setup Adam optimizers for both G and D</span>
+<span class="n">optimizerD</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">netD</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">,</span> <span class="n">betas</span><span class="o">=</span><span class="p">(</span><span class="n">beta1</span><span class="p">,</span> <span class="mf">0.999</span><span class="p">))</span>
+<span class="n">optimizerG</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">netG</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">,</span> <span class="n">betas</span><span class="o">=</span><span class="p">(</span><span class="n">beta1</span><span class="p">,</span> <span class="mf">0.999</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="training">
+<h3>Training<a class="anchorjs-link " href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#training" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+<p>Finally, now that we have all of the parts of the GAN framework defined,
+we can train it. Be mindful that training GANs is somewhat of an art
+form, as incorrect hyperparameter settings lead to mode collapse with
+little explanation of what went wrong. Here, we will closely follow
+Algorithm 1 from Goodfellow’s paper, while abiding by some of the best
+practices shown in <a class="reference external" href="https://github.com/soumith/ganhacks">ganhacks</a>.
+Namely, we will “construct different mini-batches for real and fake”
+images, and also adjust G’s objective function to maximize
+<span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-47-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;l&lt;/mi&gt;&lt;mi&gt;o&lt;/mi&gt;&lt;mi&gt;g&lt;/mi&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;G&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;z&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>l</mi><mi>o</mi><mi>g</mi><mi>D</mi><mo stretchy="false">(</mo><mi>G</mi><mo stretchy="false">(</mo><mi>z</mi><mo stretchy="false">)</mo><mo stretchy="false">)</mo></math></span></span><script type="math/tex" id="MathJax-Element-47">logD(G(z))</script></span>. Training is split up into two main parts. Part 1
+updates the Discriminator and Part 2 updates the Generator.</p>
+<p><strong>Part 1 - Train the Discriminator</strong></p>
+<p>Recall, the goal of training the discriminator is to maximize the
+probability of correctly classifying a given input as real or fake. In
+terms of Goodfellow, we wish to “update the discriminator by ascending
+its stochastic gradient”. Practically, we want to maximize
+<span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-48-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;l&lt;/mi&gt;&lt;mi&gt;o&lt;/mi&gt;&lt;mi&gt;g&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo&gt;+&lt;/mo&gt;&lt;mi&gt;l&lt;/mi&gt;&lt;mi&gt;o&lt;/mi&gt;&lt;mi&gt;g&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;mo&gt;&amp;#x2212;&lt;/mo&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;G&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;z&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>l</mi><mi>o</mi><mi>g</mi><mo stretchy="false">(</mo><mi>D</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mo stretchy="false">)</mo><mo>+</mo><mi>l</mi><mi>o</mi><mi>g</mi><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>D</mi><mo stretchy="false">(</mo><mi>G</mi><mo stretchy="false">(</mo><mi>z</mi><mo stretchy="false">)</mo><mo stretchy="false">)</mo><mo stretchy="false">)</mo></math></span></span><script type="math/tex" id="MathJax-Element-48">log(D(x)) + log(1-D(G(z)))</script></span>. Due to the separate mini-batch
+suggestion from ganhacks, we will calculate this in two steps. First, we
+will construct a batch of real samples from the training set, forward
+pass through <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-49-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>D</mi></math></span></span><script type="math/tex" id="MathJax-Element-49">D</script></span>, calculate the loss (<span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-50-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;l&lt;/mi&gt;&lt;mi&gt;o&lt;/mi&gt;&lt;mi&gt;g&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>l</mi><mi>o</mi><mi>g</mi><mo stretchy="false">(</mo><mi>D</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mo stretchy="false">)</mo></math></span></span><script type="math/tex" id="MathJax-Element-50">log(D(x))</script></span>), then
+calculate the gradients in a backward pass. Secondly, we will construct
+a batch of fake samples with the current generator, forward pass this
+batch through <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-51-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>D</mi></math></span></span><script type="math/tex" id="MathJax-Element-51">D</script></span>, calculate the loss (<span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-52-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;l&lt;/mi&gt;&lt;mi&gt;o&lt;/mi&gt;&lt;mi&gt;g&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;mo&gt;&amp;#x2212;&lt;/mo&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;G&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;z&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>l</mi><mi>o</mi><mi>g</mi><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>D</mi><mo stretchy="false">(</mo><mi>G</mi><mo stretchy="false">(</mo><mi>z</mi><mo stretchy="false">)</mo><mo stretchy="false">)</mo><mo stretchy="false">)</mo></math></span></span><script type="math/tex" id="MathJax-Element-52">log(1-D(G(z)))</script></span>),
+and <em>accumulate</em> the gradients with a backward pass. Now, with the
+gradients accumulated from both the all-real and all-fake batches, we
+call a step of the Discriminator’s optimizer.</p>
+<p><strong>Part 2 - Train the Generator</strong></p>
+<p>As stated in the original paper, we want to train the Generator by
+minimizing <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-53-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;l&lt;/mi&gt;&lt;mi&gt;o&lt;/mi&gt;&lt;mi&gt;g&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;mo&gt;&amp;#x2212;&lt;/mo&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;G&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;z&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>l</mi><mi>o</mi><mi>g</mi><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>D</mi><mo stretchy="false">(</mo><mi>G</mi><mo stretchy="false">(</mo><mi>z</mi><mo stretchy="false">)</mo><mo stretchy="false">)</mo><mo stretchy="false">)</mo></math></span></span><script type="math/tex" id="MathJax-Element-53">log(1-D(G(z)))</script></span> in an effort to generate better fakes.
+As mentioned, this was shown by Goodfellow to not provide sufficient
+gradients, especially early in the learning process. As a fix, we
+instead wish to maximize <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-54-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;l&lt;/mi&gt;&lt;mi&gt;o&lt;/mi&gt;&lt;mi&gt;g&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;G&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;z&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>l</mi><mi>o</mi><mi>g</mi><mo stretchy="false">(</mo><mi>D</mi><mo stretchy="false">(</mo><mi>G</mi><mo stretchy="false">(</mo><mi>z</mi><mo stretchy="false">)</mo><mo stretchy="false">)</mo><mo stretchy="false">)</mo></math></span></span><script type="math/tex" id="MathJax-Element-54">log(D(G(z)))</script></span>. In the code we accomplish
+this by: classifying the Generator output from Part 1 with the
+Discriminator, computing G’s loss <em>using real labels as GT</em>, computing
+G’s gradients in a backward pass, and finally updating G’s parameters
+with an optimizer step. It may seem counter-intuitive to use the real
+labels as GT labels for the loss function, but this allows us to use the
+<span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-55-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;l&lt;/mi&gt;&lt;mi&gt;o&lt;/mi&gt;&lt;mi&gt;g&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>l</mi><mi>o</mi><mi>g</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></math></span></span><script type="math/tex" id="MathJax-Element-55">log(x)</script></span> part of the BCELoss (rather than the <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-56-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;l&lt;/mi&gt;&lt;mi&gt;o&lt;/mi&gt;&lt;mi&gt;g&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;mo&gt;&amp;#x2212;&lt;/mo&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>l</mi><mi>o</mi><mi>g</mi><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>x</mi><mo stretchy="false">)</mo></math></span></span><script type="math/tex" id="MathJax-Element-56">log(1-x)</script></span>
+part) which is exactly what we want.</p>
+<p>Finally, we will do some statistic reporting and at the end of each
+epoch we will push our fixed_noise batch through the generator to
+visually track the progress of G’s training. The training statistics
+reported are:</p>
+<ul class="simple">
+<li><strong>Loss_D</strong> - discriminator loss calculated as the sum of losses for
+the all real and all fake batches (<span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-57-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;l&lt;/mi&gt;&lt;mi&gt;o&lt;/mi&gt;&lt;mi&gt;g&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo&gt;+&lt;/mo&gt;&lt;mi&gt;l&lt;/mi&gt;&lt;mi&gt;o&lt;/mi&gt;&lt;mi&gt;g&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;G&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;z&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>l</mi><mi>o</mi><mi>g</mi><mo stretchy="false">(</mo><mi>D</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mo stretchy="false">)</mo><mo>+</mo><mi>l</mi><mi>o</mi><mi>g</mi><mo stretchy="false">(</mo><mi>D</mi><mo stretchy="false">(</mo><mi>G</mi><mo stretchy="false">(</mo><mi>z</mi><mo stretchy="false">)</mo><mo stretchy="false">)</mo><mo stretchy="false">)</mo></math></span></span><script type="math/tex" id="MathJax-Element-57">log(D(x)) + log(D(G(z)))</script></span>).</li>
+<li><strong>Loss_G</strong> - generator loss calculated as <span class="math notranslate nohighlight"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax_Error" id="MathJax-Element-58-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;l&lt;/mi&gt;&lt;mi&gt;o&lt;/mi&gt;&lt;mi&gt;g&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;D&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;G&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;z&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span aria-hidden="true">[Math Processing Error]</span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>l</mi><mi>o</mi><mi>g</mi><mo stretchy="false">(</mo><mi>D</mi><mo stretchy="false">(</mo><mi>G</mi><mo stretchy="false">(</mo><mi>z</mi><mo stretchy="false">)</mo><mo stretchy="false">)</mo><mo stretchy="false">)</mo></math></span></span><script type="math/tex" id="MathJax-Element-58">log(D(G(z)))</script></span></li>
+<li><strong>D(x)</strong> - the average output (across the batch) of the discriminator
+for the all real batch. This should start close to 1 then
+theoretically converge to 0.5 when G gets better. Think about why
+this is.</li>
+<li><strong>D(G(z))</strong> - average discriminator outputs for the all fake batch.
+The first number is before D is updated and the second number is
+after D is updated. These numbers should start near 0 and converge to
+0.5 as G gets better. Think about why this is.</li>
+</ul>
+<p><strong>Note:</strong> This step might take a while, depending on how many epochs you
+run and if you removed some data from the dataset.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Training Loop</span>
+
+<span class="c1"># Lists to keep track of progress</span>
+<span class="n">img_list</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">G_losses</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">D_losses</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">iters</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s2">"Starting Training Loop..."</span><span class="p">)</span>
+<span class="c1"># For each epoch</span>
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">):</span>
+    <span class="c1"># For each batch in the dataloader</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dataloader</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
+
+        <span class="c1">############################</span>
+        <span class="c1"># (1) Update D network: maximize log(D(x)) + log(1 - D(G(z)))</span>
+        <span class="c1">###########################</span>
+        <span class="c1">## Train with all-real batch</span>
+        <span class="n">netD</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="c1"># Format batch</span>
+        <span class="n">real_cpu</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">b_size</span> <span class="o">=</span> <span class="n">real_cpu</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">b_size</span><span class="p">,),</span> <span class="n">real_label</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+        <span class="c1"># Forward pass real batch through D</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">netD</span><span class="p">(</span><span class="n">real_cpu</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># Calculate loss on all-real batch</span>
+        <span class="n">errD_real</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
+        <span class="c1"># Calculate gradients for D in backward pass</span>
+        <span class="n">errD_real</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="n">D_x</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+        <span class="c1">## Train with all-fake batch</span>
+        <span class="c1"># Generate batch of latent vectors</span>
+        <span class="n">noise</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">b_size</span><span class="p">,</span> <span class="n">nz</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+        <span class="c1"># Generate fake image batch with G</span>
+        <span class="n">fake</span> <span class="o">=</span> <span class="n">netG</span><span class="p">(</span><span class="n">noise</span><span class="p">)</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="n">fake_label</span><span class="p">)</span>
+        <span class="c1"># Classify all fake batch with D</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">netD</span><span class="p">(</span><span class="n">fake</span><span class="o">.</span><span class="n">detach</span><span class="p">())</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># Calculate D's loss on the all-fake batch</span>
+        <span class="n">errD_fake</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
+        <span class="c1"># Calculate the gradients for this batch</span>
+        <span class="n">errD_fake</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="n">D_G_z1</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="c1"># Add the gradients from the all-real and all-fake batches</span>
+        <span class="n">errD</span> <span class="o">=</span> <span class="n">errD_real</span> <span class="o">+</span> <span class="n">errD_fake</span>
+        <span class="c1"># Update D</span>
+        <span class="n">optimizerD</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+        <span class="c1">############################</span>
+        <span class="c1"># (2) Update G network: maximize log(D(G(z)))</span>
+        <span class="c1">###########################</span>
+        <span class="n">netG</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="n">real_label</span><span class="p">)</span>  <span class="c1"># fake labels are real for generator cost</span>
+        <span class="c1"># Since we just updated D, perform another forward pass of all-fake batch through D</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">netD</span><span class="p">(</span><span class="n">fake</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># Calculate G's loss based on this output</span>
+        <span class="n">errG</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
+        <span class="c1"># Calculate gradients for G</span>
+        <span class="n">errG</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="n">D_G_z2</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="c1"># Update G</span>
+        <span class="n">optimizerG</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+        <span class="c1"># Output training stats</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">50</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s1">'[</span><span class="si">%d</span><span class="s1">/</span><span class="si">%d</span><span class="s1">][</span><span class="si">%d</span><span class="s1">/</span><span class="si">%d</span><span class="s1">]</span><span class="se">\t</span><span class="s1">Loss_D: </span><span class="si">%.4f</span><span class="se">\t</span><span class="s1">Loss_G: </span><span class="si">%.4f</span><span class="se">\t</span><span class="s1">D(x): </span><span class="si">%.4f</span><span class="se">\t</span><span class="s1">D(G(z)): </span><span class="si">%.4f</span><span class="s1"> / </span><span class="si">%.4f</span><span class="s1">'</span>
+                  <span class="o">%</span> <span class="p">(</span><span class="n">epoch</span><span class="p">,</span> <span class="n">num_epochs</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataloader</span><span class="p">),</span>
+                     <span class="n">errD</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span> <span class="n">errG</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span> <span class="n">D_x</span><span class="p">,</span> <span class="n">D_G_z1</span><span class="p">,</span> <span class="n">D_G_z2</span><span class="p">))</span>
+
+        <span class="c1"># Save Losses for plotting later</span>
+        <span class="n">G_losses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">errG</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+        <span class="n">D_losses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">errD</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+
+        <span class="c1"># Check how the generator is doing by saving G's output on fixed_noise</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">iters</span> <span class="o">%</span> <span class="mi">500</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">((</span><span class="n">epoch</span> <span class="o">==</span> <span class="n">num_epochs</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataloader</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)):</span>
+            <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+                <span class="n">fake</span> <span class="o">=</span> <span class="n">netG</span><span class="p">(</span><span class="n">fixed_noise</span><span class="p">)</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
+            <span class="n">img_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vutils</span><span class="o">.</span><span class="n">make_grid</span><span class="p">(</span><span class="n">fake</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+
+        <span class="n">iters</span> <span class="o">+=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Starting Training Loop...
+[0/5][0/1583]   Loss_D: 1.7410  Loss_G: 4.7765  D(x): 0.5343    D(G(z)): 0.5771 / 0.0136
+[0/5][50/1583]  Loss_D: 0.0048  Loss_G: 28.2117 D(x): 0.9957    D(G(z)): 0.0000 / 0.0000
+[0/5][100/1583] Loss_D: 0.0001  Loss_G: 39.4683 D(x): 0.9999    D(G(z)): 0.0000 / 0.0000
+[0/5][150/1583] Loss_D: 0.0011  Loss_G: 37.6015 D(x): 0.9989    D(G(z)): 0.0000 / 0.0000
+[0/5][200/1583] Loss_D: 0.5211  Loss_G: 4.9254  D(x): 0.7500    D(G(z)): 0.0506 / 0.0159
+[0/5][250/1583] Loss_D: 1.4724  Loss_G: 10.0143 D(x): 0.9658    D(G(z)): 0.7247 / 0.0002
+[0/5][300/1583] Loss_D: 0.4149  Loss_G: 4.9463  D(x): 0.8753    D(G(z)): 0.1985 / 0.0104
+[0/5][350/1583] Loss_D: 0.7249  Loss_G: 5.3010  D(x): 0.8501    D(G(z)): 0.3606 / 0.0119
+[0/5][400/1583] Loss_D: 0.5187  Loss_G: 3.8507  D(x): 0.6958    D(G(z)): 0.0516 / 0.0406
+[0/5][450/1583] Loss_D: 0.5242  Loss_G: 4.0679  D(x): 0.6751    D(G(z)): 0.0573 / 0.0434
+[0/5][500/1583] Loss_D: 1.0007  Loss_G: 3.4061  D(x): 0.5100    D(G(z)): 0.0143 / 0.0709
+[0/5][550/1583] Loss_D: 1.0508  Loss_G: 4.8458  D(x): 0.8129    D(G(z)): 0.4488 / 0.0169
+[0/5][600/1583] Loss_D: 0.4986  Loss_G: 4.3863  D(x): 0.7646    D(G(z)): 0.1163 / 0.0220
+[0/5][650/1583] Loss_D: 0.4530  Loss_G: 5.2993  D(x): 0.8588    D(G(z)): 0.1639 / 0.0127
+[0/5][700/1583] Loss_D: 0.5529  Loss_G: 3.9319  D(x): 0.7933    D(G(z)): 0.2037 / 0.0288
+[0/5][750/1583] Loss_D: 0.4886  Loss_G: 6.5729  D(x): 0.8891    D(G(z)): 0.2607 / 0.0048
+[0/5][800/1583] Loss_D: 0.5633  Loss_G: 4.1540  D(x): 0.8489    D(G(z)): 0.2563 / 0.0350
+[0/5][850/1583] Loss_D: 0.4319  Loss_G: 3.7377  D(x): 0.7971    D(G(z)): 0.1199 / 0.0385
+[0/5][900/1583] Loss_D: 0.6440  Loss_G: 3.8937  D(x): 0.6374    D(G(z)): 0.0263 / 0.0393
+[0/5][950/1583] Loss_D: 0.3705  Loss_G: 3.5163  D(x): 0.9041    D(G(z)): 0.1766 / 0.0641
+[0/5][1000/1583]        Loss_D: 0.8845  Loss_G: 2.4737  D(x): 0.5645    D(G(z)): 0.0533 / 0.1346
+[0/5][1050/1583]        Loss_D: 1.2511  Loss_G: 8.2476  D(x): 0.9488    D(G(z)): 0.6273 / 0.0008
+[0/5][1100/1583]        Loss_D: 0.5358  Loss_G: 2.6891  D(x): 0.7552    D(G(z)): 0.1476 / 0.1039
+[0/5][1150/1583]        Loss_D: 0.3919  Loss_G: 3.9438  D(x): 0.8560    D(G(z)): 0.1754 / 0.0322
+[0/5][1200/1583]        Loss_D: 0.6560  Loss_G: 2.7288  D(x): 0.6489    D(G(z)): 0.0766 / 0.0920
+[0/5][1250/1583]        Loss_D: 0.5159  Loss_G: 4.6510  D(x): 0.8019    D(G(z)): 0.1962 / 0.0228
+[0/5][1300/1583]        Loss_D: 0.5440  Loss_G: 5.2200  D(x): 0.9021    D(G(z)): 0.2997 / 0.0133
+[0/5][1350/1583]        Loss_D: 0.4321  Loss_G: 3.6934  D(x): 0.8130    D(G(z)): 0.1469 / 0.0404
+[0/5][1400/1583]        Loss_D: 0.7463  Loss_G: 2.5410  D(x): 0.5951    D(G(z)): 0.0229 / 0.1257
+[0/5][1450/1583]        Loss_D: 0.3626  Loss_G: 2.9456  D(x): 0.7787    D(G(z)): 0.0567 / 0.0924
+[0/5][1500/1583]        Loss_D: 0.3484  Loss_G: 4.3322  D(x): 0.8735    D(G(z)): 0.1642 / 0.0234
+[0/5][1550/1583]        Loss_D: 0.5528  Loss_G: 3.0508  D(x): 0.7334    D(G(z)): 0.1420 / 0.0686
+[1/5][0/1583]   Loss_D: 0.4239  Loss_G: 3.0153  D(x): 0.7738    D(G(z)): 0.1133 / 0.0758
+[1/5][50/1583]  Loss_D: 0.6395  Loss_G: 5.2596  D(x): 0.9416    D(G(z)): 0.3871 / 0.0088
+[1/5][100/1583] Loss_D: 0.5077  Loss_G: 4.7760  D(x): 0.8754    D(G(z)): 0.2633 / 0.0156
+[1/5][150/1583] Loss_D: 0.4885  Loss_G: 3.6678  D(x): 0.7639    D(G(z)): 0.1315 / 0.0450
+[1/5][200/1583] Loss_D: 0.5627  Loss_G: 4.2336  D(x): 0.8781    D(G(z)): 0.2900 / 0.0306
+[1/5][250/1583] Loss_D: 0.6554  Loss_G: 2.3318  D(x): 0.6718    D(G(z)): 0.1136 / 0.1406
+[1/5][300/1583] Loss_D: 0.6571  Loss_G: 5.3768  D(x): 0.9138    D(G(z)): 0.3755 / 0.0083
+[1/5][350/1583] Loss_D: 1.9983  Loss_G: 7.9848  D(x): 0.9538    D(G(z)): 0.7750 / 0.0011
+[1/5][400/1583] Loss_D: 0.3772  Loss_G: 3.9364  D(x): 0.8967    D(G(z)): 0.2102 / 0.0285
+[1/5][450/1583] Loss_D: 0.4463  Loss_G: 3.0712  D(x): 0.8555    D(G(z)): 0.2079 / 0.0689
+[1/5][500/1583] Loss_D: 0.6098  Loss_G: 4.1572  D(x): 0.8822    D(G(z)): 0.3391 / 0.0237
+[1/5][550/1583] Loss_D: 0.4054  Loss_G: 2.6959  D(x): 0.8048    D(G(z)): 0.1274 / 0.0970
+[1/5][600/1583] Loss_D: 1.8738  Loss_G: 7.9804  D(x): 0.9747    D(G(z)): 0.7700 / 0.0010
+[1/5][650/1583] Loss_D: 0.6244  Loss_G: 5.4202  D(x): 0.9545    D(G(z)): 0.3906 / 0.0087
+[1/5][700/1583] Loss_D: 0.5411  Loss_G: 1.8885  D(x): 0.8138    D(G(z)): 0.2401 / 0.1935
+[1/5][750/1583] Loss_D: 0.5708  Loss_G: 4.8557  D(x): 0.9289    D(G(z)): 0.3492 / 0.0215
+[1/5][800/1583] Loss_D: 0.6619  Loss_G: 5.1710  D(x): 0.8984    D(G(z)): 0.3753 / 0.0108
+[1/5][850/1583] Loss_D: 1.1465  Loss_G: 6.1948  D(x): 0.9480    D(G(z)): 0.5922 / 0.0040
+[1/5][900/1583] Loss_D: 0.5698  Loss_G: 3.9506  D(x): 0.8777    D(G(z)): 0.3172 / 0.0290
+[1/5][950/1583] Loss_D: 0.4853  Loss_G: 4.1306  D(x): 0.8979    D(G(z)): 0.2859 / 0.0256
+[1/5][1000/1583]        Loss_D: 0.3741  Loss_G: 4.1067  D(x): 0.9140    D(G(z)): 0.2181 / 0.0279
+[1/5][1050/1583]        Loss_D: 0.5041  Loss_G: 3.3261  D(x): 0.8453    D(G(z)): 0.2486 / 0.0535
+[1/5][1100/1583]        Loss_D: 0.5085  Loss_G: 3.0127  D(x): 0.8200    D(G(z)): 0.2194 / 0.0745
+[1/5][1150/1583]        Loss_D: 0.6381  Loss_G: 2.4018  D(x): 0.6784    D(G(z)): 0.1552 / 0.1289
+[1/5][1200/1583]        Loss_D: 0.3995  Loss_G: 2.9683  D(x): 0.8467    D(G(z)): 0.1771 / 0.0742
+[1/5][1250/1583]        Loss_D: 0.3191  Loss_G: 3.1937  D(x): 0.8514    D(G(z)): 0.1246 / 0.0613
+[1/5][1300/1583]        Loss_D: 1.3317  Loss_G: 3.7484  D(x): 0.8807    D(G(z)): 0.6001 / 0.0456
+[1/5][1350/1583]        Loss_D: 0.8143  Loss_G: 3.2590  D(x): 0.9245    D(G(z)): 0.4717 / 0.0582
+[1/5][1400/1583]        Loss_D: 1.2635  Loss_G: 6.3583  D(x): 0.9357    D(G(z)): 0.6406 / 0.0037
+[1/5][1450/1583]        Loss_D: 0.5402  Loss_G: 3.0481  D(x): 0.7853    D(G(z)): 0.2036 / 0.0705
+[1/5][1500/1583]        Loss_D: 0.5413  Loss_G: 2.1252  D(x): 0.7504    D(G(z)): 0.1748 / 0.1608
+[1/5][1550/1583]        Loss_D: 0.5337  Loss_G: 1.7167  D(x): 0.6934    D(G(z)): 0.1153 / 0.2180
+[2/5][0/1583]   Loss_D: 0.9363  Loss_G: 4.5195  D(x): 0.9010    D(G(z)): 0.5140 / 0.0190
+[2/5][50/1583]  Loss_D: 0.5772  Loss_G: 2.0468  D(x): 0.6545    D(G(z)): 0.0847 / 0.1759
+[2/5][100/1583] Loss_D: 0.6133  Loss_G: 2.8494  D(x): 0.7687    D(G(z)): 0.2510 / 0.0752
+[2/5][150/1583] Loss_D: 0.6580  Loss_G: 1.3701  D(x): 0.6157    D(G(z)): 0.0944 / 0.3062
+[2/5][200/1583] Loss_D: 0.4506  Loss_G: 3.1416  D(x): 0.8110    D(G(z)): 0.1893 / 0.0593
+[2/5][250/1583] Loss_D: 0.6017  Loss_G: 1.7049  D(x): 0.6454    D(G(z)): 0.0895 / 0.2373
+[2/5][300/1583] Loss_D: 0.6628  Loss_G: 4.1071  D(x): 0.9236    D(G(z)): 0.4071 / 0.0229
+[2/5][350/1583] Loss_D: 0.5507  Loss_G: 2.9020  D(x): 0.8058    D(G(z)): 0.2425 / 0.0732
+[2/5][400/1583] Loss_D: 0.4788  Loss_G: 3.0468  D(x): 0.8535    D(G(z)): 0.2487 / 0.0622
+[2/5][450/1583] Loss_D: 0.7581  Loss_G: 2.0450  D(x): 0.5440    D(G(z)): 0.0593 / 0.1818
+[2/5][500/1583] Loss_D: 0.5714  Loss_G: 1.9407  D(x): 0.6965    D(G(z)): 0.1242 / 0.1891
+[2/5][550/1583] Loss_D: 1.1300  Loss_G: 0.5871  D(x): 0.4055    D(G(z)): 0.0549 / 0.5954
+[2/5][600/1583] Loss_D: 0.6357  Loss_G: 2.7175  D(x): 0.8111    D(G(z)): 0.3048 / 0.0895
+[2/5][650/1583] Loss_D: 0.5187  Loss_G: 2.3435  D(x): 0.7822    D(G(z)): 0.2061 / 0.1218
+[2/5][700/1583] Loss_D: 0.9229  Loss_G: 1.1150  D(x): 0.4791    D(G(z)): 0.0327 / 0.3868
+[2/5][750/1583] Loss_D: 0.5245  Loss_G: 1.8106  D(x): 0.7155    D(G(z)): 0.1299 / 0.2083
+[2/5][800/1583] Loss_D: 0.4799  Loss_G: 2.8196  D(x): 0.8220    D(G(z)): 0.2164 / 0.0823
+[2/5][850/1583] Loss_D: 0.9281  Loss_G: 1.5483  D(x): 0.5670    D(G(z)): 0.1871 / 0.2724
+[2/5][900/1583] Loss_D: 0.7313  Loss_G: 2.8182  D(x): 0.7625    D(G(z)): 0.3189 / 0.0840
+[2/5][950/1583] Loss_D: 0.6317  Loss_G: 2.6598  D(x): 0.8600    D(G(z)): 0.3348 / 0.0917
+[2/5][1000/1583]        Loss_D: 1.0768  Loss_G: 3.9403  D(x): 0.9490    D(G(z)): 0.5657 / 0.0319
+[2/5][1050/1583]        Loss_D: 0.4784  Loss_G: 2.9042  D(x): 0.7759    D(G(z)): 0.1690 / 0.0727
+[2/5][1100/1583]        Loss_D: 0.6153  Loss_G: 4.0332  D(x): 0.9167    D(G(z)): 0.3816 / 0.0276
+[2/5][1150/1583]        Loss_D: 0.5275  Loss_G: 2.5204  D(x): 0.7714    D(G(z)): 0.2031 / 0.1079
+[2/5][1200/1583]        Loss_D: 1.2761  Loss_G: 0.7232  D(x): 0.3699    D(G(z)): 0.0765 / 0.5377
+[2/5][1250/1583]        Loss_D: 0.7228  Loss_G: 3.0886  D(x): 0.9119    D(G(z)): 0.4347 / 0.0597
+[2/5][1300/1583]        Loss_D: 0.5350  Loss_G: 2.3980  D(x): 0.7495    D(G(z)): 0.1752 / 0.1153
+[2/5][1350/1583]        Loss_D: 0.6194  Loss_G: 3.4980  D(x): 0.8945    D(G(z)): 0.3633 / 0.0412
+[2/5][1400/1583]        Loss_D: 1.5532  Loss_G: 4.8643  D(x): 0.9521    D(G(z)): 0.7258 / 0.0114
+[2/5][1450/1583]        Loss_D: 0.6652  Loss_G: 2.8868  D(x): 0.7724    D(G(z)): 0.2847 / 0.0734
+[2/5][1500/1583]        Loss_D: 0.6018  Loss_G: 2.2974  D(x): 0.7752    D(G(z)): 0.2472 / 0.1313
+[2/5][1550/1583]        Loss_D: 1.7645  Loss_G: 0.3688  D(x): 0.2319    D(G(z)): 0.0384 / 0.7134
+[3/5][0/1583]   Loss_D: 0.5425  Loss_G: 2.8558  D(x): 0.8312    D(G(z)): 0.2706 / 0.0723
+[3/5][50/1583]  Loss_D: 2.1252  Loss_G: 0.3165  D(x): 0.1749    D(G(z)): 0.0191 / 0.7774
+[3/5][100/1583] Loss_D: 0.4853  Loss_G: 2.7265  D(x): 0.6969    D(G(z)): 0.0828 / 0.0869
+[3/5][150/1583] Loss_D: 0.8138  Loss_G: 1.8059  D(x): 0.6945    D(G(z)): 0.3141 / 0.1974
+[3/5][200/1583] Loss_D: 0.4422  Loss_G: 2.6735  D(x): 0.7837    D(G(z)): 0.1563 / 0.0913
+[3/5][250/1583] Loss_D: 0.6169  Loss_G: 2.1705  D(x): 0.7222    D(G(z)): 0.2057 / 0.1383
+[3/5][300/1583] Loss_D: 0.5452  Loss_G: 2.1233  D(x): 0.7126    D(G(z)): 0.1465 / 0.1499
+[3/5][350/1583] Loss_D: 0.5947  Loss_G: 2.6678  D(x): 0.8425    D(G(z)): 0.3101 / 0.0891
+[3/5][400/1583] Loss_D: 0.5270  Loss_G: 2.9506  D(x): 0.8276    D(G(z)): 0.2613 / 0.0708
+[3/5][450/1583] Loss_D: 0.9140  Loss_G: 1.4111  D(x): 0.6282    D(G(z)): 0.2857 / 0.2843
+[3/5][500/1583] Loss_D: 0.6173  Loss_G: 3.5804  D(x): 0.8747    D(G(z)): 0.3474 / 0.0354
+[3/5][550/1583] Loss_D: 0.7729  Loss_G: 3.4795  D(x): 0.9100    D(G(z)): 0.4539 / 0.0414
+[3/5][600/1583] Loss_D: 0.5335  Loss_G: 2.1187  D(x): 0.6905    D(G(z)): 0.1111 / 0.1600
+[3/5][650/1583] Loss_D: 0.6221  Loss_G: 3.2912  D(x): 0.9052    D(G(z)): 0.3750 / 0.0507
+[3/5][700/1583] Loss_D: 0.5845  Loss_G: 3.2824  D(x): 0.8782    D(G(z)): 0.3311 / 0.0512
+[3/5][750/1583] Loss_D: 0.7693  Loss_G: 2.4148  D(x): 0.8076    D(G(z)): 0.3817 / 0.1210
+[3/5][800/1583] Loss_D: 0.6770  Loss_G: 3.9540  D(x): 0.8965    D(G(z)): 0.3873 / 0.0282
+[3/5][850/1583] Loss_D: 0.5291  Loss_G: 3.3160  D(x): 0.8399    D(G(z)): 0.2651 / 0.0522
+[3/5][900/1583] Loss_D: 1.0922  Loss_G: 0.6127  D(x): 0.4263    D(G(z)): 0.0688 / 0.5860
+[3/5][950/1583] Loss_D: 0.9968  Loss_G: 5.3245  D(x): 0.9212    D(G(z)): 0.5373 / 0.0080
+[3/5][1000/1583]        Loss_D: 0.6876  Loss_G: 1.5398  D(x): 0.6673    D(G(z)): 0.2001 / 0.2584
+[3/5][1050/1583]        Loss_D: 0.7795  Loss_G: 2.3521  D(x): 0.7214    D(G(z)): 0.3101 / 0.1184
+[3/5][1100/1583]        Loss_D: 0.4788  Loss_G: 2.6517  D(x): 0.8523    D(G(z)): 0.2489 / 0.0897
+[3/5][1150/1583]        Loss_D: 0.5847  Loss_G: 3.2523  D(x): 0.8153    D(G(z)): 0.2834 / 0.0500
+[3/5][1200/1583]        Loss_D: 0.5483  Loss_G: 3.8439  D(x): 0.8495    D(G(z)): 0.2860 / 0.0317
+[3/5][1250/1583]        Loss_D: 2.1051  Loss_G: 1.0995  D(x): 0.1668    D(G(z)): 0.0170 / 0.4171
+[3/5][1300/1583]        Loss_D: 0.4804  Loss_G: 2.4944  D(x): 0.8734    D(G(z)): 0.2646 / 0.1059
+[3/5][1350/1583]        Loss_D: 0.5422  Loss_G: 2.0115  D(x): 0.7351    D(G(z)): 0.1693 / 0.1691
+[3/5][1400/1583]        Loss_D: 1.7067  Loss_G: 4.1804  D(x): 0.9199    D(G(z)): 0.7346 / 0.0243
+[3/5][1450/1583]        Loss_D: 0.7245  Loss_G: 2.3356  D(x): 0.7535    D(G(z)): 0.3197 / 0.1146
+[3/5][1500/1583]        Loss_D: 0.6599  Loss_G: 3.2302  D(x): 0.8343    D(G(z)): 0.3378 / 0.0547
+[3/5][1550/1583]        Loss_D: 0.6346  Loss_G: 1.7186  D(x): 0.6826    D(G(z)): 0.1756 / 0.2233
+[4/5][0/1583]   Loss_D: 0.5837  Loss_G: 2.2397  D(x): 0.7062    D(G(z)): 0.1631 / 0.1351
+[4/5][50/1583]  Loss_D: 0.8588  Loss_G: 1.4508  D(x): 0.4918    D(G(z)): 0.0347 / 0.2807
+[4/5][100/1583] Loss_D: 0.7890  Loss_G: 4.4428  D(x): 0.9273    D(G(z)): 0.4688 / 0.0153
+[4/5][150/1583] Loss_D: 0.8364  Loss_G: 2.6700  D(x): 0.7841    D(G(z)): 0.3945 / 0.0927
+[4/5][200/1583] Loss_D: 0.7199  Loss_G: 3.8914  D(x): 0.9251    D(G(z)): 0.4414 / 0.0276
+[4/5][250/1583] Loss_D: 0.7014  Loss_G: 2.9978  D(x): 0.7862    D(G(z)): 0.3221 / 0.0715
+[4/5][300/1583] Loss_D: 0.7704  Loss_G: 1.3553  D(x): 0.5866    D(G(z)): 0.1363 / 0.3122
+[4/5][350/1583] Loss_D: 0.5444  Loss_G: 2.2792  D(x): 0.7007    D(G(z)): 0.1193 / 0.1316
+[4/5][400/1583] Loss_D: 0.6236  Loss_G: 3.1278  D(x): 0.7675    D(G(z)): 0.2535 / 0.0611
+[4/5][450/1583] Loss_D: 0.5701  Loss_G: 2.4199  D(x): 0.7733    D(G(z)): 0.2360 / 0.1182
+[4/5][500/1583] Loss_D: 0.6191  Loss_G: 3.7337  D(x): 0.9639    D(G(z)): 0.3953 / 0.0341
+[4/5][550/1583] Loss_D: 0.6419  Loss_G: 1.4806  D(x): 0.6403    D(G(z)): 0.1171 / 0.2726
+[4/5][600/1583] Loss_D: 0.5521  Loss_G: 2.0600  D(x): 0.6410    D(G(z)): 0.0595 / 0.1605
+[4/5][650/1583] Loss_D: 0.7524  Loss_G: 1.6199  D(x): 0.5480    D(G(z)): 0.0637 / 0.2411
+[4/5][700/1583] Loss_D: 1.3447  Loss_G: 1.0767  D(x): 0.3456    D(G(z)): 0.0748 / 0.4074
+[4/5][750/1583] Loss_D: 0.8180  Loss_G: 4.2147  D(x): 0.9418    D(G(z)): 0.4908 / 0.0202
+[4/5][800/1583] Loss_D: 0.5119  Loss_G: 2.9162  D(x): 0.8769    D(G(z)): 0.2900 / 0.0700
+[4/5][850/1583] Loss_D: 0.7021  Loss_G: 2.8739  D(x): 0.7849    D(G(z)): 0.3231 / 0.0765
+[4/5][900/1583] Loss_D: 0.8841  Loss_G: 1.2770  D(x): 0.5078    D(G(z)): 0.0850 / 0.3291
+[4/5][950/1583] Loss_D: 0.6073  Loss_G: 2.8699  D(x): 0.8009    D(G(z)): 0.2812 / 0.0764
+[4/5][1000/1583]        Loss_D: 0.4206  Loss_G: 2.3012  D(x): 0.8172    D(G(z)): 0.1734 / 0.1303
+[4/5][1050/1583]        Loss_D: 0.6698  Loss_G: 3.2972  D(x): 0.8574    D(G(z)): 0.3633 / 0.0487
+[4/5][1100/1583]        Loss_D: 0.5797  Loss_G: 2.4071  D(x): 0.7567    D(G(z)): 0.2220 / 0.1130
+[4/5][1150/1583]        Loss_D: 0.4936  Loss_G: 2.9265  D(x): 0.8430    D(G(z)): 0.2495 / 0.0696
+[4/5][1200/1583]        Loss_D: 0.5246  Loss_G: 1.9692  D(x): 0.7244    D(G(z)): 0.1477 / 0.1727
+[4/5][1250/1583]        Loss_D: 0.5755  Loss_G: 1.9848  D(x): 0.6586    D(G(z)): 0.1045 / 0.1793
+[4/5][1300/1583]        Loss_D: 0.7246  Loss_G: 1.6653  D(x): 0.5593    D(G(z)): 0.0742 / 0.2359
+[4/5][1350/1583]        Loss_D: 0.4122  Loss_G: 3.0791  D(x): 0.8962    D(G(z)): 0.2398 / 0.0603
+[4/5][1400/1583]        Loss_D: 0.5610  Loss_G: 2.1497  D(x): 0.7729    D(G(z)): 0.2253 / 0.1500
+[4/5][1450/1583]        Loss_D: 0.7074  Loss_G: 3.1831  D(x): 0.8994    D(G(z)): 0.4016 / 0.0583
+[4/5][1500/1583]        Loss_D: 1.1541  Loss_G: 1.5621  D(x): 0.4186    D(G(z)): 0.0842 / 0.2671
+[4/5][1550/1583]        Loss_D: 0.6665  Loss_G: 1.4459  D(x): 0.6239    D(G(z)): 0.1036 / 0.2773
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="results">
+<h2>Results<a class="anchorjs-link " href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#results" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<p>Finally, lets check out how we did. Here, we will look at three
+different results. First, we will see how D and G’s losses changed
+during training. Second, we will visualize G’s output on the fixed_noise
+batch for every epoch. And third, we will look at a batch of real data
+next to a batch of fake data from G.</p>
+<p><strong>Loss versus training iteration</strong></p>
+<p>Below is a plot of D &amp; G’s losses versus training iterations.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"Generator and Discriminator Loss During Training"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">G_losses</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">"G"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">D_losses</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">"D"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">"iterations"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">"Loss"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="../_images/sphx_glr_dcgan_faces_tutorial_002.png" class="sphx-glr-single-img" src="./DCGAN Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/sphx_glr_dcgan_faces_tutorial_002.png">
+<p><strong>Visualization of G’s progression</strong></p>
+<p>Remember how we saved the generator’s output on the fixed_noise batch
+after every epoch of training. Now, we can visualize the training
+progression of G with an animation. Press the play button to start the
+animation.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#%%capture</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">"off"</span><span class="p">)</span>
+<span class="n">ims</span> <span class="o">=</span> <span class="p">[[</span><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">i</span><span class="p">,(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">)),</span> <span class="n">animated</span><span class="o">=</span><span class="bp">True</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">img_list</span><span class="p">]</span>
+<span class="n">ani</span> <span class="o">=</span> <span class="n">animation</span><span class="o">.</span><span class="n">ArtistAnimation</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">ims</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">repeat_delay</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">blit</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="n">HTML</span><span class="p">(</span><span class="n">ani</span><span class="o">.</span><span class="n">to_jshtml</span><span class="p">())</span>
+</pre></div>
+</div>
+<img alt="../_images/sphx_glr_dcgan_faces_tutorial_003.png" class="sphx-glr-single-img" src="./DCGAN Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/sphx_glr_dcgan_faces_tutorial_003.png">
+<p><strong>Real Images vs.&nbsp;Fake Images</strong></p>
+<p>Finally, lets take a look at some real images and fake images side by
+side.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Grab a batch of real images from the dataloader</span>
+<span class="n">real_batch</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">dataloader</span><span class="p">))</span>
+
+<span class="c1"># Plot the real images</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">15</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">"off"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"Real Images"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">vutils</span><span class="o">.</span><span class="n">make_grid</span><span class="p">(</span><span class="n">real_batch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)[:</span><span class="mi">64</span><span class="p">],</span> <span class="n">padding</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="o">.</span><span class="n">cpu</span><span class="p">(),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">)))</span>
+
+<span class="c1"># Plot the fake images from the last epoch</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">"off"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"Fake Images"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">img_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">)))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="../_images/sphx_glr_dcgan_faces_tutorial_004.png" class="sphx-glr-single-img" src="./DCGAN Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/sphx_glr_dcgan_faces_tutorial_004.png">
+</div>
+<div class="section" id="where-to-go-next">
+<h2>Where to Go Next<a class="anchorjs-link " href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#where-to-go-next" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em/1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<p>We have reached the end of our journey, but there are several places you
+could go from here. You could:</p>
+<ul class="simple">
+<li>Train for longer to see how good the results get</li>
+<li>Modify this model to take a different dataset and possibly change the
+size of the images and the model architecture</li>
+<li>Check out some other cool GAN projects
+<a class="reference external" href="https://github.com/nashory/gans-awesome-applications">here</a></li>
+<li>Create GANs that generate
+<a class="reference external" href="https://deepmind.com/blog/wavenet-generative-model-raw-audio/">music</a></li>
+</ul>
+<p><strong>Total running time of the script:</strong> ( 29 minutes  6.509 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-beginner-dcgan-faces-tutorial-py">
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal has-code" download="" href="https://pytorch.org/tutorials/_downloads/dc0e6f475c6735eb8d233374f8f462eb/dcgan_faces_tutorial.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">dcgan_faces_tutorial.py</span></code></a></div>
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal has-code" download="" href="https://pytorch.org/tutorials/_downloads/e9c8374ecc202120dc94db26bf08a00f/dcgan_faces_tutorial.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">dcgan_faces_tutorial.ipynb</span></code></a></div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.readthedocs.io/">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+</div>
+</article>
+</div>
+<footer>
+<div aria-label="footer navigation" class="rst-footer-buttons" role="navigation">
+<a accesskey="n" class="btn btn-neutral float-right" href="https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html" rel="next" title="Reinforcement Learning (DQN) Tutorial">Next <img class="next-page" src="./DCGAN Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/chevron-right-orange.svg"></a>
+<a accesskey="p" class="btn btn-neutral" href="https://pytorch.org/tutorials/intermediate/seq2seq_translation_tutorial.html" rel="prev" title="Translation with a Sequence to Sequence Network and Attention"><img class="previous-page" src="./DCGAN Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/chevron-right-orange.svg"> Previous</a>
+</div>
+<hr>
+<div role="contentinfo">
+<p>
+        © Copyright 2017, PyTorch.
+
+    </p>
+</div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org/">Read the Docs</a>. 
+
+</footer>
+</div>
+</div>
+<div class="pytorch-content-right" id="pytorch-content-right" style="height: 100%;">
+<div class="pytorch-right-menu scrolling-fixed" id="pytorch-right-menu" style="">
+<div class="pytorch-side-scroll" id="pytorch-side-scroll-right" style="height: 767px;">
+<ul>
+<li><a class="reference internal title-link has-children" href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#">DCGAN Tutorial</a><ul>
+<li><a class="reference internal" href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#introduction">Introduction</a></li>
+<li><a class="reference internal not-expanded" href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#generative-adversarial-networks">Generative Adversarial Networks</a><ul>
+<li><a class="reference internal" href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#what-is-a-gan">What is a GAN?</a></li>
+<li><a class="reference internal" href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#what-is-a-dcgan">What is a DCGAN?</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#inputs">Inputs</a></li>
+<li><a class="reference internal" href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#data">Data</a></li>
+<li><a class="reference internal not-expanded" href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#implementation">Implementation</a><ul>
+<li><a class="reference internal" href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#weight-initialization">Weight Initialization</a></li>
+<li><a class="reference internal" href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#generator">Generator</a></li>
+<li><a class="reference internal" href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#discriminator">Discriminator</a></li>
+<li><a class="reference internal" href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#loss-functions-and-optimizers">Loss Functions and Optimizers</a></li>
+<li><a class="reference internal" href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#training">Training</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#results">Results</a></li>
+<li><a class="reference internal" href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#where-to-go-next">Where to Go Next</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+</div>
+<script data-url_root="../" id="documentation_options" src="./DCGAN Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/documentation_options.js.下载" type="text/javascript"></script>
+<script src="./DCGAN Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/jquery.js.下载" type="text/javascript"></script>
+<script src="./DCGAN Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/underscore.js.下载" type="text/javascript"></script>
+<script src="./DCGAN Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/doctools.js.下载" type="text/javascript"></script>
+<script async="async" src="./DCGAN Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/MathJax.js.下载" type="text/javascript"></script>
+<script src="./DCGAN Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/popper.min.js.下载" type="text/javascript"></script>
+<script src="./DCGAN Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/bootstrap.min.js.下载" type="text/javascript"></script>
+<script src="./DCGAN Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/theme.js.下载" type="text/javascript"></script>
+<script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-90545585-2', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<img alt="" height="1" src="./DCGAN Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/saved_resource" style="border-style:none;" width="1">
+<!-- Begin Footer -->
+<div class="container-fluid docs-tutorials-resources" id="docs-tutorials-resources">
+<div class="container">
+<div class="row">
+<div class="col-md-4 text-center">
+<h2>Docs</h2>
+<p>Access comprehensive developer documentation for PyTorch</p>
+<a class="with-right-arrow" href="https://pytorch.org/docs/stable/index.html">View Docs</a>
+</div>
+<div class="col-md-4 text-center">
+<h2>Tutorials</h2>
+<p>Get in-depth tutorials for beginners and advanced developers</p>
+<a class="with-right-arrow" href="https://pytorch.org/tutorials">View Tutorials</a>
+</div>
+<div class="col-md-4 text-center">
+<h2>Resources</h2>
+<p>Find development resources and get your questions answered</p>
+<a class="with-right-arrow" href="https://pytorch.org/resources">View Resources</a>
+</div>
+</div>
+</div>
+</div>
+<footer class="site-footer">
+<div class="container footer-container">
+<div class="footer-logo-wrapper">
+<a class="footer-logo" href="https://pytorch.org/"></a>
+</div>
+<div class="footer-links-wrapper">
+<div class="footer-links-col">
+<ul>
+<li class="list-title"><a href="https://pytorch.org/">PyTorch</a></li>
+<li><a href="https://pytorch.org/get-started">Get Started</a></li>
+<li><a href="https://pytorch.org/features">Features</a></li>
+<li><a href="https://pytorch.org/ecosystem">Ecosystem</a></li>
+<li><a href="https://pytorch.org/blog/">Blog</a></li>
+<li><a href="https://pytorch.org/resources">Resources</a></li>
+</ul>
+</div>
+<div class="footer-links-col">
+<ul>
+<li class="list-title"><a href="https://pytorch.org/support">Support</a></li>
+<li><a href="https://pytorch.org/tutorials">Tutorials</a></li>
+<li><a href="https://pytorch.org/docs/stable/index.html">Docs</a></li>
+<li><a href="https://discuss.pytorch.org/" target="_blank">Discuss</a></li>
+<li><a href="https://github.com/pytorch/pytorch/issues" target="_blank">Github Issues</a></li>
+<li><a href="https://pytorch.slack.com/" target="_blank">Slack</a></li>
+<li><a href="https://github.com/pytorch/pytorch/blob/master/CONTRIBUTING.md" target="_blank">Contributing</a></li>
+</ul>
+</div>
+<div class="footer-links-col follow-us-col">
+<ul>
+<li class="list-title">Follow Us</li>
+<li>
+<div id="mc_embed_signup">
+<form action="https://twitter.us14.list-manage.com/subscribe/post?u=75419c71fe0a935e53dfa4a3f&amp;id=91d0dccd39" class="email-subscribe-form validate" id="mc-embedded-subscribe-form" method="post" name="mc-embedded-subscribe-form" novalidate="" target="_blank">
+<div class="email-subscribe-form-fields-wrapper" id="mc_embed_signup_scroll">
+<div class="mc-field-group">
+<label for="mce-EMAIL" style="display:none;">Email Address</label>
+<input class="required email" id="mce-EMAIL" name="EMAIL" placeholder="Email Address" type="email" value="">
+</div>
+<div class="clear" id="mce-responses">
+<div class="response" id="mce-error-response" style="display:none"></div>
+<div class="response" id="mce-success-response" style="display:none"></div>
+</div> <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+<div aria-hidden="true" style="position: absolute; left: -5000px;"><input name="b_75419c71fe0a935e53dfa4a3f_91d0dccd39" tabindex="-1" type="text" value=""></div>
+<div class="clear">
+<input class="button email-subscribe-button" id="mc-embedded-subscribe" name="subscribe" type="submit" value="">
+</div>
+</div>
+</form>
+</div>
+</li>
+</ul>
+<div class="footer-social-icons">
+<a class="facebook" href="https://www.facebook.com/pytorch" target="_blank"></a>
+<a class="twitter" href="https://twitter.com/pytorch" target="_blank"></a>
+</div>
+</div>
+</div>
+</div>
+</footer>
+<!-- End Footer -->
+<!-- Begin Mobile Menu -->
+<div class="mobile-main-menu">
+<div class="container-fluid">
+<div class="container">
+<div class="mobile-main-menu-header-container">
+<a aria-label="PyTorch" class="header-logo" href="https://pytorch.org/"></a>
+<a class="main-menu-close-button" data-behavior="close-mobile-menu" href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#"></a>
+</div>
+</div>
+</div>
+<div class="mobile-main-menu-links-container">
+<div class="main-menu">
+<ul>
+<li>
+<a href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#">Get Started</a>
+</li>
+<li>
+<a href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#">Features</a>
+</li>
+<li>
+<a href="https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html#">Ecosystem</a>
+</li>
+<li>
+<a href="https://pytorch.org/blog/">Blog</a>
+</li>
+<li class="active">
+<a href="https://pytorch.org/tutorials">Tutorials</a>
+</li>
+<li>
+<a href="https://pytorch.org/docs/stable/index.html">Docs</a>
+</li>
+<li>
+<a href="https://pytorch.org/resources">Resources</a>
+</li>
+<li>
+<a href="https://github.com/pytorch/pytorch">Github</a>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<!-- End Mobile Menu -->
+<script src="./DCGAN Tutorial — PyTorch Tutorials 1.0.0.dev20181207 documentation_files/anchor.min.js.下载" type="text/javascript"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      pytorchAnchors.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
+  </script>
+
+<div style="position: absolute; width: 0px; height: 0px; overflow: hidden; padding: 0px; border: 0px; margin: 0px;"><div id="MathJax_Font_Test" style="position: absolute; visibility: hidden; top: 0px; left: 0px; width: auto; padding: 0px; border: 0px; margin: 0px; white-space: nowrap; text-align: left; text-indent: 0px; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; font-size: 40px; font-weight: normal; font-style: normal; font-family: MathJax_Size4, monospace;"></div></div></body></html>
