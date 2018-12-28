@@ -318,10 +318,10 @@ model = BiLSTM_CRF(len(word_to_ix), tag_to_ix, EMBEDDING_DIM, HIDDEN_DIM)
 optimizer = optim.SGD(model.parameters(), lr=0.01, weight_decay=1e-4)
 
 # Check predictions before training
-# with torch.no_grad():
-#     precheck_sent = prepare_sequence(training_data[0][0], word_to_ix)
-#     precheck_tags = torch.tensor([tag_to_ix[t] for t in training_data[0][1]], dtype=torch.long)
-#     print(model(precheck_sent))
+with torch.no_grad():
+    precheck_sent = prepare_sequence(training_data[0][0], word_to_ix)
+    precheck_tags = torch.tensor([tag_to_ix[t] for t in training_data[0][1]], dtype=torch.long)
+    print(model(precheck_sent))
 
 # Make sure prepare_sequence from earlier in the LSTM section is loaded
 for epoch in range(
@@ -345,10 +345,10 @@ for epoch in range(
         optimizer.step()
 
 # Check predictions after training
-# with torch.no_grad():
-#     precheck_sent = prepare_sequence(training_data[0][0], word_to_ix)
-#     print(model(precheck_sent))
-# # We got it!
+with torch.no_grad():
+    precheck_sent = prepare_sequence(training_data[0][0], word_to_ix)
+    print(model(precheck_sent))
+# We got it!
 
 
 ######################################################################
