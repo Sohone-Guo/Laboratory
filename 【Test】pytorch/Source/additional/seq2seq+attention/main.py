@@ -379,25 +379,25 @@ class EncoderRNN(nn.Module):
 #
 #
 
-# class DecoderRNN(nn.Module):
-#     def __init__(self, hidden_size, output_size):
-#         super(DecoderRNN, self).__init__()
-#         self.hidden_size = hidden_size
+class DecoderRNN(nn.Module):
+    def __init__(self, hidden_size, output_size):
+        super(DecoderRNN, self).__init__()
+        self.hidden_size = hidden_size
 
-#         self.embedding = nn.Embedding(output_size, hidden_size)
-#         self.gru = nn.GRU(hidden_size, hidden_size)
-#         self.out = nn.Linear(hidden_size, output_size)
-#         self.softmax = nn.LogSoftmax(dim=1)
+        self.embedding = nn.Embedding(output_size, hidden_size)
+        self.gru = nn.GRU(hidden_size, hidden_size)
+        self.out = nn.Linear(hidden_size, output_size)
+        self.softmax = nn.LogSoftmax(dim=1)
 
-#     def forward(self, input, hidden):
-#         output = self.embedding(input).view(1, 1, -1)
-#         output = F.relu(output)
-#         output, hidden = self.gru(output, hidden)
-#         output = self.softmax(self.out(output[0]))
-#         return output, hidden
+    def forward(self, input, hidden):
+        output = self.embedding(input).view(1, 1, -1)
+        output = F.relu(output)
+        output, hidden = self.gru(output, hidden)
+        output = self.softmax(self.out(output[0]))
+        return output, hidden
 
-#     def initHidden(self):
-#         return torch.zeros(1, 1, self.hidden_size, device=device)
+    def initHidden(self):
+        return torch.zeros(1, 1, self.hidden_size, device=device)
 
 ######################################################################
 # I encourage you to train and observe the results of this model, but to
@@ -455,9 +455,9 @@ class AttnDecoderRNN(nn.Module):
     def forward(self, input, hidden, encoder_outputs):
         embedded = self.embedding(input).view(1, 1, -1)
         embedded = self.dropout(embedded)
+
         attn_weights = F.softmax(
             self.attn(torch.cat((embedded[0], hidden[0]), 1)), dim=1)
-        print(attn_weights.unsqueeze(0).size(),encoder_outputs.unsqueeze(0).size())
         attn_applied = torch.bmm(attn_weights.unsqueeze(0),
                                  encoder_outputs.unsqueeze(0))
 
@@ -766,16 +766,76 @@ def evaluateRandomly(encoder, decoder, n=10):
 #    encoder and decoder are initialized and run ``trainIters`` again.
 #
 
-hidden_size = 23
+hidden_size = 256
 encoder1 = EncoderRNN(input_lang.n_words, hidden_size).to(device)
 attn_decoder1 = AttnDecoderRNN(hidden_size, output_lang.n_words, dropout_p=0.1).to(device)
 
-trainIters(encoder1, attn_decoder1, 1, print_every=1)
+trainIters(encoder1, attn_decoder1, 75000, print_every=5000)
 
 ######################################################################
 #
 
+evaluateRandomly(encoder1, attn_decoder1)
 
+
+######################################################################
+# Visualizing Attention
+# ---------------------
+#
+# A useful property of the attention mechanism is its highly interpretable
+# outputs. Because it is used to weight specific encoder outputs of the
+# input sequence, we can imagine looking where the network is focused most
+# at each time step.
+#
+# You could simply run ``plt.matshow(attentions)`` to see attention output
+# displayed as a matrix, with the columns being input steps and rows being
+# output steps:
+#
+
+output_words, attentions = evaluate(
+    encoder1, attn_decoder1, "je suis trop froid .")
+plt.matshow(attentions.numpy())
+
+
+######################################################################
+# For a better viewing experience we will do the extra work of adding axes
+# and labels:
+#
+
+def showAttention(input_sentence, output_words, attentions):
+    # Set up figure with colorbar
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    cax = ax.matshow(attentions.numpy(), cmap='bone')
+    fig.colorbar(cax)
+
+    # Set up axes
+    ax.set_xticklabels([''] + input_sentence.split(' ') +
+                       ['<EOS>'], rotation=90)
+    ax.set_yticklabels([''] + output_words)
+
+    # Show label at every tick
+    ax.xaxis.set_major_locator(ticker.MultipleLocator(1))
+    ax.yaxis.set_major_locator(ticker.MultipleLocator(1))
+
+    plt.show()
+
+
+def evaluateAndShowAttention(input_sentence):
+    output_words, attentions = evaluate(
+        encoder1, attn_decoder1, input_sentence)
+    print('input =', input_sentence)
+    print('output =', ' '.join(output_words))
+    showAttention(input_sentence, output_words, attentions)
+
+
+evaluateAndShowAttention("elle a cinq ans de moins que moi .")
+
+evaluateAndShowAttention("elle est trop petit .")
+
+evaluateAndShowAttention("je ne crains pas de mourir .")
+
+evaluateAndShowAttention("c est un jeune directeur plein de talent .")
 
 
 ######################################################################
