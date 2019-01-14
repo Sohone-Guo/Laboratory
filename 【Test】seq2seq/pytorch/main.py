@@ -12,11 +12,11 @@ if __name__ == "__main__":
                                             shuffle=True)
     
     embedding_size = 3
-    total_word = 7
+    total_word = 22
     hidden_size = 14
     num_layers = 1
 
-    epochs = 1
+    epochs = 100
 
     
     encoder_model = Encoder(embedding_size, total_word, hidden_size, num_layers)
