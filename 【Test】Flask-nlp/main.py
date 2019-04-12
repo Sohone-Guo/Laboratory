@@ -2,7 +2,7 @@ import os
 from flask import Flask, render_template
 import requests
 from flask import Flask, render_template, request
-
+import time
 
 app = Flask(__name__)
 
@@ -14,8 +14,8 @@ def index():
     if request.method == "POST":
         # get url that the user has entered
         try:
-            input_language = request.form['input_language']
-            output_language = request.form['output_language']
+            input_language = request.form['from_language']
+            output_language = request.form['to_language']
         except:errors.append("The output language is error")
 
         try:
@@ -31,8 +31,9 @@ def index():
             print("Result:",input_language,output_language,num_sentences, source_text)
             results["text"] = source_text
             print(results)
+            time.sleep(5)
     return render_template('index.html', errors=errors, results=results)
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True, threaded=True)
