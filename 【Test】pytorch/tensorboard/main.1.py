@@ -4,7 +4,7 @@ from torch.utils.tensorboard import SummaryWriter
 from torchvision import datasets, transforms
 
 # Writer will output to ./runs/ directory by default
-writer = SummaryWriter()
+writer = SummaryWriter("../runs/")
 
 transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
 trainset = datasets.MNIST('mnist_train', train=True, download=True, transform=transform)

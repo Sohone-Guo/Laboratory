@@ -12,11 +12,13 @@ RUN bash ~/anaconda3.sh -b -p /home/anaconda3 \
 ENV PATH /home/anaconda3/bin:$PATH
 
 # install pytorch
-RUN conda install pytorch torchvision cudatoolkit=9.0 -c pytorch
+RUN conda install pytorch torchvision cudatoolkit=9.0 -c pytorch -y
+
 RUN pip install tb-nightly
 
-RUN conda install -c conda-forge opencv
-RUN conda install -c defaults libprotobuf protobuf
+RUN conda install -c conda-forge opencv -y
+RUN conda install -c defaults libprotobuf protobuf -y
+RUN apt-get install libgl1-mesa-dev
 
 # install jieba; rouge; pycorenlp; breadability; gensim
 RUN pip install util_ds
