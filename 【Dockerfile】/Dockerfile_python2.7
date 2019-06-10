@@ -1,0 +1,28 @@
+# cuda:8.0 docker build -f  Dockerfile.test -t image-train-test .
+FROM nvidia/cuda:latest
+MAINTAINER Sohone <guoxh@docomolabs-beijing.com.cn>
+
+RUN apt-get update
+RUN apt-get install -y wget
+
+# install Anaconda2
+RUN wget https://repo.anaconda.com/archive/Anaconda2-2019.03-Linux-x86_64.sh -O ~/anaconda2.sh
+RUN bash ~/anaconda2.sh -b -p /home/anaconda2 \
+	&& rm ~/anaconda2.sh 
+ENV PATH /home/anaconda2/bin:$PATH
+
+# install pytorch
+RUN conda install tensorflow-gpu=1.4.1 -y
+
+#RUN pip install tb-nightly
+
+#RUN conda install -c conda-forge opencv -y
+#RUN conda install -c defaults libprotobuf protobuf -y
+#RUN apt-get install libgl1-mesa-dev
+
+# install jieba; rouge; pycorenlp; breadability; gensim
+#RUN pip install util_ds
+#RUN pip install rouge
+# RUN pip install pycorenlp
+# RUN pip install breadability
+# RUN conda install gensim -y
