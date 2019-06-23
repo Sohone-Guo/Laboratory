@@ -1,4 +1,6 @@
 import pysnooper
+import torchsnooper #@torchsnooper.snoop()
+
 a = 10
 
 @pysnooper.snoop("debug.log")
