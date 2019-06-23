@@ -1,7 +1,7 @@
 import pysnooper
 a = 10
 
-@pysnooper.snoop()
+@pysnooper.snoop("debug.log")
 def count(value):
     total = []
     a = len(total)
