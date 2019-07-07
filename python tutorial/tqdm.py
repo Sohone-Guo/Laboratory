@@ -1,4 +1,4 @@
-rom tqdm import tqdm,trange
+from tqdm import tqdm,trange
 from time import sleep
 text = ""
 for char in tqdm(["a", "b", "c", "d"]):
