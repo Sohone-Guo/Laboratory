@@ -1,0 +1,18 @@
+
+#备份fstab文件
+sudo cp /etc/fstab /etc/fstab.$(date +%Y-%m-%d)
+
+#停止docker
+sudo service docker stop
+
+#/data/docker/为目标路径，根据机器情况设定。
+export DOCKER_PATH=/data/docker/
+
+#用rsync同步/var/lib/docker到新位置
+rsync -avPHSX /var/lib/docker/.  $DOCKER_PATH
+
+echo $DOCKER_PATH /var/lib/docker  none bind 0 0 >> /etc/fstab
+mount –a
+df -h
+
+sudo service docker start
