@@ -1,0 +1,6 @@
+# 配置环境
+export PATH="/Applications/Julia-1.2.app/Contents/Resources/julia/bin/:$PATH"
+
+# 配置jupter
+import Pkg
+Pkg.add("IJulia")
