@@ -9,6 +9,16 @@ sudo passwd guoxh
 # add a extied user to group
 usermod -a -G music one
 
+# create id group 
+groupadd –g 888 users
+
+# change the uid
+usermod -u 2005 user
+
+# change the gid
+groupmod -g 3000 music
+
+
 # made a folder
 mkdir project_music
 
