@@ -37,3 +37,26 @@ def index():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True, threaded=True)
+    
+from flask import Flask
+from keras.models import load_model
+import tensorflow as tf
+
+app = Flask(__name__)
+
+# Perform these actions when the first
+# request is made
+@app.before_first_request
+def load_model_to_app():
+    # Load the model
+    app.model = load_model('models/model.h5')
+    
+    # Save the graph to the app framework.
+    app.graph = tf.get_default_graph()
+
+app.route(‘/<image_path>’)
+def classify(image_path):
+    model = app.model
+    graph = app.graph
+    with graph.as_default():
+        return(our_function(image_path, model))
